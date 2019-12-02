@@ -1,10 +1,10 @@
 import zencad.libs.screw
-import zencad
+import pyservoce
 from zencad.libs.screw import screw
 import numpy
 
 class inertia:
-	def __init__(self, mass, matrix, cm):
+	def __init__(self, mass=0, matrix=numpy.diag([1,1,1]), cm=pyservoce.point3(0,0,0)):
 		self.cm = zencad.point3(cm)
 		self.matrix = numpy.matrix(matrix)
 		self.invmatrix = numpy.linalg.inv(self.matrix)
@@ -19,7 +19,6 @@ class inertia:
 			invrot * self.matrix * rot,
 			trans(self.cm)
 		)
-
 
 	def impulse_to_speed(self, impulse_screw):
 		lin = impulse_screw.lin / self.mass

@@ -1,16 +1,53 @@
 import zencad.assemble
+import zencad.libs.physics
+import zencad.libs.screw
 import pyservoce
 
 from abc import ABC, abstractmethod
 
-class kinematic_unit(ABC, zencad.assemble.unit):
+class kynematic_unit_output(zencad.libs.physics.physunit):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+
+class kinematic_frame(zencad.libs.physics.physunit):
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+
+	def link(self, arg):
+		self.link_unique(arg)
+
+	def link_unique(self, arg):
+		self.childs = set()
+		super().link(arg)
+		self.output = arg
+	
+	def reduce_forces_as_prereaction(self):
+		self.output.reduce_forces()
+		trans = self.output.location
+		mov = - trans.translation()
+		rot = trans.rotation().inverse()
+		self.prereaction = self.output.reaction.rotate_by_quat(rot).carry(-mov)
+
+	def reduce_forces(self):
+		self.reduce_forces_as_prereaction()
+		self.divide_prereaction()
+
+	def divide_prereaction(self):
+		raise NotImplementedError
+
+class free(kinematic_frame):
+	def divide_prereaction(self):
+		self.reaction = zencad.libs.screw.screw((0,0,0),(0,0,0))
+		self.dalamber = self.prereaction
+
+class kinematic_unit(ABC, kinematic_frame):
 	"""Кинематическое звено задаётся двумя системами координат,
 	входной и выходной. Изменение кинематических параметров изменяет
 	положение выходной СК относительно входной"""
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
-		self.output = zencad.assemble.unit(parent=self)
+		#self.output = kynematic_unit_output(parent=self)
 
 	@abstractmethod
 	def senses(self):
@@ -26,16 +63,6 @@ class kinematic_unit(ABC, zencad.assemble.unit):
 		переданным координатам"""
 		
 		raise NotImplementedError
-
-	def link(self, arg):
-		"""Присоединить объект arg к выходной СК.
-
-		Для kinematic_unit метод link переопределяется,
-		с тем, чтобы линковка происходила не ко входной, 
-		а к выходной СК"""
-
-		self.output.link(arg)
-
 
 class kinematic_unit_one_axis(kinematic_unit):
 	"""Кинематическое звено специального вида,

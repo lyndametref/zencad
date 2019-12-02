@@ -23,9 +23,9 @@ class unit:
 
 	def __init__(self, 
 				parent=None,
+				location=pyservoce.libservoce.nulltrans(),
 				shape=None,
-				name=None, 
-				location=pyservoce.libservoce.nulltrans()):    
+				name=None):    
 		self.parent = parent
 		self.shape = shape
 		self.location = evalcache.unlazy_if_need(location)

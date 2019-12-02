@@ -39,7 +39,7 @@ d = link(ax=(1,0,0))
 a.rotator.link(b)
 b.rotator.link(c)
 c.rotator.link(d)
-d.rotator.output.set_shape(cone(5,12,40).up(10) + cylinder(5,10))
+d.rotator.link(zencad.assemble.unit(shape=cone(5,12,40).up(10) + cylinder(5,10)))
 
 LINKS = [a,b,c,d]
 

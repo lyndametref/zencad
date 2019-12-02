@@ -1,8 +1,55 @@
 import zencad.transform
 from zencad.libs.screw import screw
+import zencad.libs.inertia
+import pyservoce
+
+class force_source:
+	def __init__(self, finit=screw()):
+		self.force = finit
+
+	def evaluate(self):
+		raise NotImplementedError
 
 class physunit(zencad.assemble.unit):
-	def __init__(self, pose, )
+	def __init__(self, 
+			parent=None, 
+			location=zencad.transform.nulltrans(), 
+			inertia=zencad.libs.inertia.inertia()):
+		super().__init__(parent, location)
+		self.inertia = inertia
+		self.force_srcs = []
+
+	def add_force_source(self, fsource):
+		self.force_srcs.append(fsource)
+
+	def reduce_forces(self):
+		fscrew = screw()
+
+		for u in self.childs:
+			u.reduce_forces()
+			mov = - u.location.translation()
+			rot = u.location.rotation().inverse()
+			reaction_of_unit = u.reaction.rotate_by_quat(rot).carry(-mov)
+			fscrew += reaction_of_unit
+
+		for fs in self.force_srcs:
+			fs.evaluate()
+			fscrew += fs.force.carry(-fs.center)
+
+		self.reaction = fscrew
+
+	def evaluate_complex_inertia(self):
+		for u in self.childs:
+			u.evaluate_complex_inertia()
+
+		lst = [ u.complex_inertia for u in self.childs ]
+		lst.append(self.inertia)
+		self.complex_inertia = zencad.libs.inertia.complex_inertia(lst)
+
+	def evaluate_accelerations(self):
+		print(self.complex_inertia)
+		dalamber = self.dalamber.carry(
+			pyservoce.vector3(*self.complex_inertia.cm))
 
 
 #def attach_force_model(unit):

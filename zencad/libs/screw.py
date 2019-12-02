@@ -87,5 +87,8 @@ class screw:
 	def rotate_by(self, trans):
 		return screw(ang=trans(self.ang), lin=trans(self.lin))
 
+	def rotate_by_quat(self, q):
+		return screw(ang=q.rotate(self.ang), lin=q.rotate(self.lin))
+
 def screw_of_vector(vec, arm):
 	return screw(lin=vec, ang=arm.cross(vec))
