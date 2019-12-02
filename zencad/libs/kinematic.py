@@ -20,6 +20,15 @@ class kinematic_frame(zencad.libs.physics.physunit):
 		self.childs = set()
 		super().link(arg)
 		self.output = arg
+
+	def set_speed_screw(self, spdscrew):
+		self.spdscrew = spdscrew
+
+	def angular_speed(self):
+		return self.spdscrew.ang
+
+	def linear_speed(self):
+		return self.spdscrew.lin
 	
 	def reduce_forces_as_prereaction(self):
 		self.output.reduce_forces()
@@ -309,3 +318,15 @@ class kinematic_chain:
 			senses = [ (trsf(w), trsf(v)) for w, v in senses ]
 
 		return list(reversed(senses))
+
+
+
+def attach_kinematic_chains(unit):
+	for u in unit.childs:
+		attach_kinematic_chains(u)
+
+	unit.kinematic_chain = kinematic_chain(unit)
+
+
+
+
