@@ -17,11 +17,21 @@ class tree_dynamic_solver:
 		for i in range(len(self.inertial_objects)): self.inertial_objects[i].dynno = i
 		for i in range(len(self.kinematic_frames)): self.kinematic_frames[i].dynno = i
 
+	def find_post_inertia_objects(self):
+		for f in self.kinematic_frames:
+			f.post_inertia_objects = []
+			 
+			def iteration(unit):
+				if hasattr(unit, "inertial_object"):
+					f.post_inertia_objects.append(unit.inertial_object)
+				for u in unit.childs:
+					iteration(u)
 
+			iteration(f)
 
 	def find_all_inertial_objects(self, unit, retarr):
 		if hasattr(unit, "inertial_object"):
-			retarr.append(unit)
+			retarr.append(unit.inertial_object)
 
 		for u in unit.childs:
 			self.find_all_inertial_objects(u, retarr)
@@ -32,3 +42,6 @@ class tree_dynamic_solver:
 
 		for u in unit.childs:
 			self.find_all_kinematic_frames(u, retarr)
+
+	def mass_matrix(self):
+		pass
