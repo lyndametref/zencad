@@ -28,7 +28,8 @@ class tree_dynamic_solver:
 		for i in range(len(self.force_sources)): self.force_sources[i].dynno = i
 		for i in range(len(self.constrait_conditions)): self.constrait_conditions[i].dynno = i
 
-	#	self.find_post_inertia_objects()
+		self.find_post_force_sources()
+		self.find_post_inertial_objects()
 		self.find_pre_kinematic_frames()
 
 	def print_state(self):
@@ -43,6 +44,16 @@ class tree_dynamic_solver:
 		for iner in self.inertial_objects:
 			print("{}: {}".format(iner.unit.name, iner.pre_kinematic_frames))
 
+	def print_post_inertial_objects(self):
+		print("post_inertial_objects for kinframes:")
+		for kinframe in self.kinematic_frames:
+			print("{}: {}".format(kinframe, kinframe.post_inertial_objects))
+
+	def print_post_force_sources(self):
+		print("post_force_sources for kinframes:")
+		for kinframe in self.kinematic_frames:
+			print("{}: {}".format(kinframe, kinframe.post_force_sources))
+
 	def find_pre_kinematic_frames(self):
 		for iner in self.inertial_objects:
 			u = iner.unit
@@ -51,6 +62,32 @@ class tree_dynamic_solver:
 				if isinstance(u, kinematic_frame):
 					iner.pre_kinematic_frames.append(u)
 				u = u.parent
+
+	def find_post_force_sources(self):
+		for kinframe in self.kinematic_frames:
+			kinframe.post_force_sources = []
+
+			def add_forces_recurse(u):
+				if hasattr(u, "force_sources"):
+					kinframe.post_force_sources.extend(u.force_sources)
+
+				for c in u.childs:
+					add_forces_recurse(c)
+
+			add_forces_recurse(kinframe)
+
+	def find_post_inertial_objects(self):
+		for kinframe in self.kinematic_frames:
+			kinframe.post_inertial_objects = []
+
+			def add_iobj_recurse(u):
+				if hasattr(u, "inertial_object"):
+					kinframe.post_inertial_objects.append(u.inertial_object)
+
+				for c in u.childs:
+					add_iobj_recurse(c)
+
+			add_iobj_recurse(kinframe)
 
 	def find_post_inertia_objects(self):
 		for f in self.kinematic_frames:
@@ -86,7 +123,7 @@ class tree_dynamic_solver:
 			self.find_all_force_sources(u, retarr)
 
 	def find_all_constrait_conditions(self, unit, retarr):
-		if hasattr(unit, "force_sources"):
+		if hasattr(unit, "constrait_conditions"):
 			self.constrait_conditions = \
 				self.constrait_conditions + unit.constrait_conditions
 
@@ -107,11 +144,75 @@ class tree_dynamic_solver:
 			accum = screw()
 			for p in iner.pre_kinematic_frames:
 				accum += p.global_spdscr
-			iner.global_update_impulse_with_speed(accum)	
+			iner.update_global_impulse_with_global_speed(accum)	
 
 	def print_impulses(self):
 		for i in self.inertial_objects:
 			print("{}: {}".format(i.unit, i.global_impulse))
+
+	def onestep(self, delta):
+		#for kinframe in self.kinematic_frames:
+		#	kinframe.integrate_position(delta)
+
+		self.baseunit.location_update(deep=True)
+
+		self.calculate_kinframe_forces()
+		self.calculate_kinframe_complex_inertia()
+		self.calculate_kinframe_accelerations_no_constrait()
+
+		for kinframe in self.kinematic_frames:
+			kinframe.dynstep(delta)
+		#	kinframe.update_local_speed()
+		#	kinframe.integrate_speed(delta)
+		self.baseunit.location_update(deep=True)
+
+	def onestep_primitive(self, delta):
+		for kinframe in self.kinematic_frames:
+			kinframe.integrate_position(delta)
+
+		self.baseunit.location_update(deep=True)
+
+		self.calculate_kinframe_forces()
+		self.calculate_kinframe_accelerations_primitive()
+
+		for kinframe in self.kinematic_frames:
+			kinframe.update_local_speed()
+			kinframe.integrate_speed(delta)
+
+	def calculate_kinframe_accelerations_no_constrait(self):
+		for kinframe in self.kinematic_frames:
+			print("noconstr")
+			kinframe.evaluate_accelerations_without_constraits()
+
+
+	def calculate_kinframe_accelerations_primitive(self):
+		for kinframe in self.kinematic_frames:
+
+			if len(kinframe.post_inertial_objects) > 0:
+				kinframe.global_accscr = \
+					kinframe.global_force_reduction * kinframe.post_inertial_objects[0].mass
+
+	def calculate_kinframe_complex_inertia(self):
+		for kinframe in self.kinematic_frames:
+			kinframe.complex_inertia = zencad.libs.inertia.complex_inertia(
+				[iner.global_inertia() for iner in kinframe.post_inertial_objects])
+
+	def calculate_kinframe_forces(self):
+		for kinframe in self.kinematic_frames:
+			accum = screw()
+
+			for fs in kinframe.post_force_sources:
+				#print(fs)
+				arm = kinframe.global_location.translation() - fs.point()
+				#print(arm)
+				f = fs.global_force().carry(arm)
+				#print(f)
+				#exit(0)
+				accum += f
+
+			kinframe.global_force_reduction = accum
+
+		#print("HEERE", kinframe.global_force)
 
 def attach_inertia(unit, 
 		pose=zencad.transform.nulltrans(), 

@@ -25,6 +25,11 @@ class inertia:
 		ang = self.invmatrix * numpy.asarray(impulse_screw.ang).reshape((3,1))
 		return screw(ang=zencad.vector3(ang[0,0], ang[1,0], ang[2,0]), lin=lin)
 
+	def force_to_acceleration(self, fscr):
+		lin = fscr.lin / self.mass
+		ang = self.invmatrix * numpy.asarray(fscr.ang).reshape((3,1))
+		return screw(ang=zencad.vector3(ang[0,0], ang[1,0], ang[2,0]), lin=lin)
+
 	def __str__(self):
 		return "".join("(m:{},i:{},c:{})".format(
 			self.mass, 
@@ -33,7 +38,7 @@ class inertia:
 		).split())
 
 def guigens_transform(matrix, mov, mass):
-	return matrix + mass * ( (mov.length()**2 * numpy.diag([1.,1.,1.])) - mov.outerprod(mov) )
+	return matrix + mass * ( ((mov.dot(mov))**2 * numpy.diag([1.,1.,1.])) - numpy.ma.outerproduct(mov, mov) )
 
 
 def complex_inertia(lst):
@@ -46,8 +51,8 @@ def complex_inertia(lst):
 	cm = cm / mass
 	
 	for I in lst:
-		matrix += guigens_transform(I.matrix, cm - zencad.vector3(*I.cm), I.mass)
-	
+		matrix += guigens_transform(I.matrix, numpy.array([*(cm - zencad.vector3(*I.cm))]), I.mass)
+
 	return inertia(
 		mass, matrix, zencad.point3(*cm)
 	)
@@ -65,15 +70,20 @@ class inertial_object:
 		])
 		self.update_globals()
 
+	def global_inertia(self):
+		cm = pyservoce.point3(*self.global_pose.translation())
+		return inertia(mass=self.mass, matrix=self.global_matrix, cm=cm)
+
 	def transformed_matrix(self, trans):
-		rot = trans.rotation().to_matrix()
-		invrot = trans.inverse().rotation().to_matrix()
-		return invrot * self.matrix * rot,
+		#rot = trans.rotation().to_matrix()
+		#invrot = trans.inverse().rotation().to_matrix()
+		#return invrot * self.matrix * rot,
+		return self.matrix
 
 	def update_globals(self):
 		self.global_pose = self.unit.global_location * self.pose
 		self.global_matrix = self.transformed_matrix(
-			self.global_pose.inverse())
+		self.global_pose.inverse())
 
 	def __repr__(self):
 		return "".join("(m:{},i:{},c:{})".format(
@@ -81,3 +91,11 @@ class inertial_object:
 			repr(self.matrix), 
 			self.pose
 		).split())
+
+	def update_global_impulse_with_global_speed(self, global_spdscr):
+		l = numpy.matmul(self.global_matrix, numpy.array(global_spdscr.ang))
+		print(l)
+		self.global_impulse = screw(
+			lin = self.mass * global_spdscr.lin,
+			ang = pyservoce.vector3(*numpy.asarray(l)[0])
+		)

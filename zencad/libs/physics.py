@@ -10,6 +10,11 @@ class force_source:
 	def evaluate(self):
 		raise NotImplementedError
 
+	def attach(self, unit):
+		if not hasattr(unit, "force_sources"):
+			unit.force_sources = []
+		unit.force_sources.append(self)
+
 class physunit(zencad.assemble.unit):
 	def __init__(self, 
 			parent=None, 

@@ -2,6 +2,7 @@
 
 import zencad
 import numpy
+import math
 
 class screw:
 	"""Геометрический винт. 
@@ -53,6 +54,12 @@ class screw:
 			lin = self.lin + self.ang.cross(arm),
 			ang = self.ang )
 	
+	def dot(self, oth):
+		l = (self.lin[0]*oth.lin[0]+self.lin[1]*oth.lin[1]+self.lin[2]*oth.lin[2]+
+			self.ang[0]*oth.ang[0]+self.ang[1]*oth.ang[1]+self.ang[2]*oth.ang[2])
+		#if l == 0: return 0
+		return l#math.sqrt(l)
+
 	def to_array(self):
 		"""Массив имеет обратный принятому в screw порядку"""
 		return numpy.array([*self.lin, *self.ang])

@@ -1,7 +1,11 @@
 import zencad.assemble
 import zencad.libs.physics
 import zencad.libs.screw
+import zencad.libs.inertia
+from zencad.libs.screw import screw
+from zencad.libs.inertia import inertia
 import pyservoce
+import numpy
 
 from abc import ABC, abstractmethod
 
@@ -12,6 +16,9 @@ from abc import ABC, abstractmethod
 class kinematic_frame(zencad.assemble.unit):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		self.global_force_reduction = screw()
+		self.global_spdscr = screw()
+		self.complex_inertia = inertia()
 
 	def link(self, arg):
 		self.link_unique(arg)
@@ -21,8 +28,14 @@ class kinematic_frame(zencad.assemble.unit):
 		super().link(arg)
 		self.output = arg
 
+	def evaluate_accelerations_without_constraits(self):
+		raise NotImplementedError
+
 	def update_global_speed(self):
-		self.global_spdscr = self.spdscr.inverse_rotate_by(self.global_location)
+		self.global_spdscr = self.spdscr.rotate_by(self.global_location)
+
+	def update_local_speed(self):
+		self.spdscr = self.global_spdscr.inverse_rotate_by(self.global_location)
 
 	def set_speed_screw(self, spdscr):
 		self.spdscr = spdscr
@@ -48,9 +61,21 @@ class kinematic_frame(zencad.assemble.unit):
 	def divide_prereaction(self):
 		raise NotImplementedError
 
+	def integrate_position(self, delta):
+		return
+
+	def integrate_speed(self, delta):
+		return
+
 class space(kinematic_frame):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+
+	def integrate_position(self, delta):
+		self.location = self.location * self.spdscr.to_trans()
+
+	def integrate_speed(self, delta):
+		self.global_spdscr = self.global_spdscr + self.global_accscr * delta
 
 #class free(kinematic_frame):
 #	def divide_prereaction(self):
@@ -96,6 +121,9 @@ class kinematic_unit_one_axis(kinematic_unit):
 		self.ax = self.ax.normalize()
 		self.mul = mul
 		self.axmul = self.ax * self.mul
+		self.speed = 0
+		self.acceleration = 0
+		self.dempher_koeff = 0.1
 
 	#override
 	def senses(self):
@@ -109,10 +137,36 @@ class kinematic_unit_one_axis(kinematic_unit):
 	def sensivity(self):
 		raise NotImplementedError
 
+	def sensivity_array(self):
+		s = self.sensivity()
+		return numpy.array([s[0][0],s[0][1],s[0][2],s[1][0],s[1][1],s[1][2]])
+
+	def sensivity_screw(self):
+		s = self.sensivity()
+		return screw(ang=s[0],lin=s[1])
+
+	def dynstep(self, delta):
+		self.coord += self.speed * delta 
+		self.speed += self.acceleration * delta - self.speed * self.dempher_koeff * delta
+		self.set_coord(self.coord, deep=False, view=False)
+
 	@abstractmethod
 	def set_coord(self, coord, **kwargs):
 		raise NotImplementedError
 
+	def evaluate_accelerations_without_constraits(self):
+		print("global_force_reduction", self.global_force_reduction)
+		carried_force_reduction = self.global_force_reduction.carry(pyservoce.vector3(*self.complex_inertia.cm))
+		print("carried_force_reduction", carried_force_reduction)
+		posible_acceleration = self.complex_inertia.force_to_acceleration(carried_force_reduction)
+		print("posible_acceleration", posible_acceleration)
+		posible_acceleration = posible_acceleration.carry(-pyservoce.vector3(*self.complex_inertia.cm))
+		print("carried_posible_acceleration", posible_acceleration)
+		print(self.complex_inertia)
+		print(posible_acceleration)
+		sens = self.sensivity_screw().rotate_by(self.global_location)
+		print(sens)
+		self.acceleration = posible_acceleration.dot(sens)
 
 class rotator(kinematic_unit_one_axis):
 	def sensivity(self):
@@ -123,7 +177,6 @@ class rotator(kinematic_unit_one_axis):
 	def set_coord(self, coord, **kwargs):
 		self.coord = coord
 		self.output.relocate(pyservoce.rotate(self.ax, coord * self.mul), **kwargs)
-
 
 class actuator(kinematic_unit_one_axis):
 	def sensivity(self):
