@@ -21,13 +21,13 @@ class physunit(zencad.assemble.unit):
 		self.cm_absframe_speed = screw()
 		self.cm_absframe_accel = screw()
 
-	def restore_kinchain_spdacc(self):
-		w = vector3()
-		for kinframe in self.kinematic_chains.kinframes:
-			w += kinframe.absframe_angular_speed()
-		self.korriolis = 
-			self.mass * self.cm_absframe_speed.lin.cross(w) * 2
-		self.hyroscopic = self.cm_absframe.kinmoment.cross(w)
+#	def restore_kinchain_spdacc(self):
+#		w = vector3()
+#		for kinframe in self.kinematic_chains.kinframes:
+#			w += kinframe.absframe_angular_speed()
+#		self.korriolis = 
+#			self.mass * self.cm_absframe_speed.lin.cross(w) * 2
+#		self.hyroscopic = self.cm_absframe.kinmoment.cross(w)
 
 	def add_force_source(self, fsource):
 		self.force_srcs.append(fsource)

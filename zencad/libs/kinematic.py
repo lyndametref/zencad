@@ -5,13 +5,13 @@ import pyservoce
 
 from abc import ABC, abstractmethod
 
-class kynematic_unit_output(zencad.libs.physics.physunit):
+#class kynematic_unit_output(zencad.assemble.unit):
+#	def __init__(self, *args, **kwargs):
+#		super().__init__(*args, **kwargs)
+
+class kinematic_frame(zencad.assemble.unit):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-
-class kinematic_frame(zencad.libs.physics.physunit):
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
 
 	def link(self, arg):
 		self.link_unique(arg)
@@ -21,8 +21,12 @@ class kinematic_frame(zencad.libs.physics.physunit):
 		super().link(arg)
 		self.output = arg
 
-	def set_speed_screw(self, spdscrew):
-		self.spdscrew = spdscrew
+	def update_global_speed(self):
+		self.global_spdscr = self.spdscr.inverse_rotate_by(self.global_location)
+
+	def set_speed_screw(self, spdscr):
+		self.spdscr = spdscr
+		self.update_global_speed()
 
 	def angular_speed(self):
 		return self.spdscrew.ang
@@ -44,10 +48,14 @@ class kinematic_frame(zencad.libs.physics.physunit):
 	def divide_prereaction(self):
 		raise NotImplementedError
 
-class free(kinematic_frame):
-	def divide_prereaction(self):
-		self.reaction = zencad.libs.screw.screw((0,0,0),(0,0,0))
-		self.dalamber = self.prereaction
+class space(kinematic_frame):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+
+#class free(kinematic_frame):
+#	def divide_prereaction(self):
+#		self.reaction = zencad.libs.screw.screw((0,0,0),(0,0,0))
+#		self.dalamber = self.prereaction
 
 class kinematic_unit(ABC, kinematic_frame):
 	"""Кинематическое звено задаётся двумя системами координат,
@@ -326,7 +334,3 @@ def attach_kinematic_chains(unit):
 		attach_kinematic_chains(u)
 
 	unit.kinematic_chain = kinematic_chain(unit)
-
-
-
-

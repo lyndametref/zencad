@@ -48,6 +48,10 @@ class screw:
 			self.ang + arm.cross(self.lin), 
 			self.lin)
 
+	def angular_carry(self, arm):
+		return screw( 
+			lin = self.lin + self.ang.cross(arm),
+			ang = self.ang )
 	
 	def to_array(self):
 		"""Массив имеет обратный принятому в screw порядку"""
@@ -75,10 +79,10 @@ class screw:
 		return screw(ang=(a[3], a[4], a[5]), lin=(a[0], a[1], a[2]))
 
 	def __str__(self):
-		return "(a:{},l:{})".format(self.ang, self.lin)
+		return "(a:({},{},{}),l:({},{},{}))".format(*self.ang, *self.lin)
 
 	def __repr__(self):
-		return "screw({},{})".format(self.ang,self.lin)
+		return "screw(a:({},{},{}),l:({},{},{}))".format(*self.ang, *self.lin)
 
 	def inverse_rotate_by(self, trans):
 		q = trans.rotation().inverse()

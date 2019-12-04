@@ -51,3 +51,33 @@ def complex_inertia(lst):
 	return inertia(
 		mass, matrix, zencad.point3(*cm)
 	)
+
+class inertial_object:
+	def __init__(self, unit, pose, mass, Ix, Iy, Iz, Ixy, Ixz, Iyz):
+		self.unit = unit
+		self.pose = pose
+		self.mass = mass
+		self.global_impulse = screw()
+		self.matrix = numpy.matrix([
+			[Ix, Ixy,Ixz],
+			[Ixy,Iy ,Iyz],
+			[Ixz,Iyz,Iz ]
+		])
+		self.update_globals()
+
+	def transformed_matrix(self, trans):
+		rot = trans.rotation().to_matrix()
+		invrot = trans.inverse().rotation().to_matrix()
+		return invrot * self.matrix * rot,
+
+	def update_globals(self):
+		self.global_pose = self.unit.global_location * self.pose
+		self.global_matrix = self.transformed_matrix(
+			self.global_pose.inverse())
+
+	def __repr__(self):
+		return "".join("(m:{},i:{},c:{})".format(
+			self.mass, 
+			repr(self.matrix), 
+			self.pose
+		).split())

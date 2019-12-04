@@ -120,7 +120,7 @@ class unit:
 		return str((n,h))
 
 	def __repr__(self):
-		return "zencad.assemble.unit('{0}')".format(self.name)
+		return "unit('{0}')".format(self.name)
 
 	def _apply_view_location(self, deep):
 		"""Перерисовать положения объектов юнита во всех зарегестрированных 
