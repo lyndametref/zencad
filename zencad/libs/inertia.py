@@ -6,6 +6,7 @@ import numpy
 class inertia:
 	def __init__(self, mass=0, matrix=numpy.diag([1,1,1]), cm=pyservoce.point3(0,0,0)):
 		self.cm = zencad.point3(cm)
+		self.veccm = zencad.vector3(*cm)
 		self.matrix = numpy.matrix(matrix)
 		self.invmatrix = numpy.linalg.inv(self.matrix)
 		self.mass = mass
@@ -43,15 +44,15 @@ def guigens_transform(matrix, mov, mass):
 
 def complex_inertia(lst):
 	cm = zencad.vector3(0,0,0)
-	matrix = numpy.matrix('0 0 0; 0 0 0; 0 0 0', dtype=numpy.float64)
+	matrix = numpy.matrix([[0.0,0,0],[0,0,0],[0,0,0]])
 
 	mass = sum([ i.mass for i in lst])
 	for I in lst:
-		cm += I.mass * zencad.vector3(*I.cm)
+		cm += I.mass * I.veccm
 	cm = cm / mass
 	
 	for I in lst:
-		matrix += guigens_transform(I.matrix, numpy.array([*(cm - zencad.vector3(*I.cm))]), I.mass)
+		matrix += guigens_transform(I.matrix, numpy.array([*(cm - I.veccm)]), I.mass)
 
 	return inertia(
 		mass, matrix, zencad.point3(*cm)
