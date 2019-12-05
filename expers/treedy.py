@@ -8,9 +8,10 @@ import zencad.libs.forces as forces
 from zencad.libs.screw import screw
 import zencad.libs.kinematic as kinematic
 
+L = 200
 body = zencad.assemble.unit(name="N", shape=sphere(20))
-a = zencad.assemble.unit(name="A", shape=(cylinder(h=40, r=5)+sphere(10).up(40)).rotateX(deg(90)))
-b = zencad.assemble.unit(name="B", shape=(cylinder(h=40, r=5)+sphere(10).up(40)).rotateX(deg(90)))
+a = zencad.assemble.unit(name="A", shape=(cylinder(h=L, r=5)+sphere(10).up(L)).rotateX(deg(90)))
+b = zencad.assemble.unit(name="B", shape=(cylinder(h=L, r=5)+sphere(10).up(L)).rotateX(deg(90)))
 
 ra = kinematic.rotator(name="RA",ax=(1,0,0), location=translate(0,-20,0), parent=body)
 rb = kinematic.rotator(name="RB",ax=(1,0,0), location=translate(0,20,0)*rotateZ(deg(180)), parent=body)
@@ -19,11 +20,11 @@ ra.link(a)
 rb.link(b)
 
 
-treedy.attach_inertia(a, mass=1, Ix=1, Iy=1, Iz=1, pose=forw(40))
-treedy.attach_inertia(b, mass=1, Ix=1, Iy=1, Iz=1, pose=forw(40))
+treedy.attach_inertia(a, mass=1, Ix=1, Iy=1, Iz=1, pose=forw(L))
+treedy.attach_inertia(b, mass=1, Ix=1, Iy=1, Iz=1, pose=forw(L))
 
-forces.gravity(unit=a,vec=(0,0,-0.2)).attach(a)
-forces.gravity(unit=b,vec=(0,0,-0.2)).attach(b)
+forces.gravity(unit=a,vec=(0,0,-9.81)).attach(a)
+forces.gravity(unit=b,vec=(0,0,-9.81)).attach(b)
 
 t = treedy.tree_dynamic_solver(body)
 
@@ -37,18 +38,37 @@ t.print_post_inertial_objects()
 t.print_post_force_sources()
 t.print_impulses()
 
-starttime = time.time()
-lasttime = starttime
-def animate(self):
-	global lasttime
-	curtime = time.time()
-	delta = curtime - lasttime
-	lasttime = curtime
+cancel = False
+def evaluate():
+	starttime = time.time()
+	lasttime = starttime
 
-	t.onestep(delta=delta)
-	print(ra.global_force_reduction)
-	print(ra.acceleration)
-	print(ra.speed)
+	
+	while True:
+		if cancel:
+			return
+		maxdelta = 0.0005
+		curtime = time.time()
+		delta = curtime - lasttime
+		lasttime = curtime
+		delta = delta
+
+		if delta > maxdelta:
+			delta = maxdelta
+
+		t.onestep(delta=delta)
+
+
+def animate(self):
+	body.location_update(deep=True, view=True)
+
+import threading
+evalthr = threading.Thread(target=evaluate)
+evalthr.start()
+
+def close_handle():
+	global cancel
+	cancel = True
 
 disp(body)
-show(animate=animate)
+show(animate=animate, animate_step = 0.00001, close_handle=close_handle)

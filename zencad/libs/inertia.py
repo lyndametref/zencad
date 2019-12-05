@@ -75,10 +75,10 @@ class inertial_object:
 		return inertia(mass=self.mass, matrix=self.global_matrix, cm=cm)
 
 	def transformed_matrix(self, trans):
-		#rot = trans.rotation().to_matrix()
-		#invrot = trans.inverse().rotation().to_matrix()
-		#return invrot * self.matrix * rot,
-		return self.matrix
+		rot = trans.rotation().to_matrix()
+		invrot = trans.inverse().rotation().to_matrix()
+		return invrot * self.matrix * rot
+		#return self.matrix
 
 	def update_globals(self):
 		self.global_pose = self.unit.global_location * self.pose

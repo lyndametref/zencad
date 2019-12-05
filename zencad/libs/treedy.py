@@ -154,7 +154,7 @@ class tree_dynamic_solver:
 		#for kinframe in self.kinematic_frames:
 		#	kinframe.integrate_position(delta)
 
-		self.baseunit.location_update(deep=True)
+		self.baseunit.location_update(deep=True, view=False)
 
 		self.calculate_kinframe_forces()
 		self.calculate_kinframe_complex_inertia()
@@ -164,7 +164,7 @@ class tree_dynamic_solver:
 			kinframe.dynstep(delta)
 		#	kinframe.update_local_speed()
 		#	kinframe.integrate_speed(delta)
-		self.baseunit.location_update(deep=True)
+		self.baseunit.location_update(deep=True, view=False)
 
 	def onestep_primitive(self, delta):
 		for kinframe in self.kinematic_frames:
@@ -181,7 +181,6 @@ class tree_dynamic_solver:
 
 	def calculate_kinframe_accelerations_no_constrait(self):
 		for kinframe in self.kinematic_frames:
-			print("noconstr")
 			kinframe.evaluate_accelerations_without_constraits()
 
 

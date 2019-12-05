@@ -243,7 +243,8 @@ def common_unbouded_proc(scene,
 	pipes=False, 
 	need_prescale=False, 
 	session_id=0,
-	sleeped = False):
+	sleeped = False,
+	animate_step=0.01):
 	"""Создание приложения клиента, управляющее логикой сеанса"""
 
 	trace("common_unbouded_proc")
@@ -344,7 +345,8 @@ def common_unbouded_proc(scene,
 	if animate:
 		ANIMATE_THREAD = AnimateThread(
 			widget=widget, 
-			updater_function=animate)
+			updater_function=animate,
+			animate_step=animate_step)
 
 		if preanimate:
 			preanimate(widget, ANIMATE_THREAD)
