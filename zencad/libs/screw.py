@@ -9,9 +9,14 @@ class screw:
 
 	Состоит из угловой и линейной части."""
 
+	__slots__=['ang', 'lin']
+
 	def __init__(self, ang=(0,0,0), lin=(0,0,0)):
 		self.ang = zencad.to_vector(ang)
 		self.lin = zencad.to_vector(lin)
+
+	def copy(self):
+		return screw(ang=self.ang, lin=self.lin)
 
 	def __add__(self, oth):
 		return screw(self.ang + oth.ang, self.lin + oth.lin)
@@ -39,20 +44,27 @@ class screw:
 		return self
 
 	def carry(self, arm):
-		"""Перенос бивектора в другую точку приложения.
+		"""Перенос бивектора в другую точку приложения. НА ВЕКТОР ПЛЕЧА!!! Не путать с радиус вектор.
+		Вектор переноса обратен радиус вектору силы.
 
 		Detail
 		------
 		Формула TODO
 		"""
 		return screw(
-			self.ang + arm.cross(self.lin), 
-			self.lin)
+			ang = self.ang - arm.cross(self.lin), 
+			lin = self.lin)
 
-	def angular_carry(self, arm):
+	def kinematic_carry(self, arm):
 		return screw( 
 			lin = self.lin + self.ang.cross(arm),
 			ang = self.ang )
+
+	def angular_carry(self, arm):
+		return self.kinematic_carry(arm)
+
+	def force_carry(self, arm):
+		return self.carry(arm)
 	
 	def dot(self, oth):
 		l = (self.lin[0]*oth.lin[0]+self.lin[1]*oth.lin[1]+self.lin[2]*oth.lin[2]+

@@ -63,6 +63,14 @@ class tree_dynamic_solver:
 					iner.pre_kinematic_frames.append(u)
 				u = u.parent
 
+		for kinframe in self.kinematic_frames:
+			u = kinframe.parent
+			kinframe.pre_kinematic_frames = []
+			while u is not None:
+				if isinstance(u, kinematic_frame):
+					kinframe.pre_kinematic_frames.append(u)
+				u = u.parent
+
 	def find_post_force_sources(self):
 		for kinframe in self.kinematic_frames:
 			kinframe.post_force_sources = []
@@ -139,11 +147,23 @@ class tree_dynamic_solver:
 	def mass_matrix(self):
 		pass
 
+	def set_linear_scale(self, scale):
+		self.linear_scale = scale
+
 	def calculate_impulses(self):
 		for iner in self.inertial_objects:
 			accum = screw()
 			for p in iner.pre_kinematic_frames:
-				accum += p.global_spdscr
+				arm = (iner.global_pose.translation() - p.global_location.translation()) * self.linear_scale
+				accum += p.global_spdscr.angular_carry(arm)
+			iner.global_speed = accum
+
+			accum = screw()
+			for p in iner.pre_kinematic_frames:
+				arm = (iner.global_pose.translation() - p.global_location.translation()) * self.linear_scale
+				accum += p.global_accscr.angular_carry(arm)
+			iner.global_acceleration = accum
+
 			iner.update_global_impulse_with_global_speed(accum)	
 
 	def print_impulses(self):
@@ -155,7 +175,13 @@ class tree_dynamic_solver:
 		#	kinframe.integrate_position(delta)
 
 		self.baseunit.location_update(deep=True, view=False)
+		#self.baseunit.frame_speed_update()
 
+		for iner in self.inertial_objects:
+			iner.update_globals()
+
+		self.calculate_impulses()
+		self.calculate_kinframe_frame_speeds_accelerations()
 		self.calculate_kinframe_forces()
 		self.calculate_kinframe_complex_inertia()
 		self.calculate_kinframe_accelerations_no_constrait()
@@ -165,6 +191,17 @@ class tree_dynamic_solver:
 		#	kinframe.update_local_speed()
 		#	kinframe.integrate_speed(delta)
 		self.baseunit.location_update(deep=True, view=False)
+
+	def calculate_kinframe_frame_speeds_accelerations(self):
+		for kinframe in self.kinematic_frames:
+			kinframe.global_frame_speed = screw()
+			kinframe.global_frame_acceleration = screw()
+			for u in kinframe.pre_kinematic_frames:
+				arm = kinframe.global_location.translation() - u.global_location.translation()
+				kinframe.global_frame_speed += u.global_spdscr.kinematic_carry(arm * self.linear_scale) 
+				kinframe.global_frame_acceleration += u.global_accscr.kinematic_carry(arm * self.linear_scale)
+
+
 
 	def onestep_primitive(self, delta):
 		for kinframe in self.kinematic_frames:
@@ -193,23 +230,43 @@ class tree_dynamic_solver:
 
 	def calculate_kinframe_complex_inertia(self):
 		for kinframe in self.kinematic_frames:
-			kinframe.complex_inertia = zencad.libs.inertia.complex_inertia(
-				[iner.global_inertia() for iner in kinframe.post_inertial_objects])
+			kinframe.inertia_koefficient = 0
+
+			for iner in kinframe.post_inertial_objects:
+				arm = (kinframe.global_location.translation() - iner.global_pose.translation()) * self.linear_scale
+				inertia = iner.global_inertia().guigens_transform(arm)
+
+				kinframe.inertia_koefficient += inertia.koefficient_for(kinframe.global_sensivity())
 
 	def calculate_kinframe_forces(self):
 		for kinframe in self.kinematic_frames:
 			accum = screw()
 
 			for fs in kinframe.post_force_sources:
-				#print(fs)
-				arm = kinframe.global_location.translation() - fs.point()
-				#print(arm)
-				f = fs.global_force().carry(arm)
-				#print(f)
-				#exit(0)
+				arm = (kinframe.global_location.translation() - fs.point()) * self.linear_scale
+				f = fs.global_force().force_carry(arm)
 				accum += f
 
+			a = accum.copy()
+
+			koriolis_enabled=True
+			if koriolis_enabled:
+				for iner in kinframe.post_inertial_objects:
+
+					ispd = iner.global_speed - kinframe.global_frame_speed
+					iacc = iner.global_acceleration - kinframe.global_frame_acceleration
+					espd = kinframe.global_frame_speed
+					eacc = kinframe.global_frame_acceleration
+
+					arm = iner.global_pose.translation() - kinframe.global_location.translation()
+					I_trans = - iner.mass * ( eacc.lin + eacc.ang.cross(arm) + espd.ang.cross(espd.ang.cross(arm)) )
+					I_kor = - iner.mass * (2 * espd.ang.cross(ispd.lin))
+
+					accum += screw(lin=I_trans + I_kor).force_carry(-arm)
+
+
 			kinframe.global_force_reduction = accum
+			#print("summary", kinframe.global_force_reduction)
 
 		#print("HEERE", kinframe.global_force)
 

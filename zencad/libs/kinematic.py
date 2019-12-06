@@ -18,21 +18,26 @@ class kinematic_frame(zencad.assemble.unit):
 		super().__init__(*args, **kwargs)
 		self.global_force_reduction = screw()
 		self.global_spdscr = screw()
+		self.global_accscr = screw()
 		self.complex_inertia = inertia()
-
-	def link(self, arg):
-		self.link_unique(arg)
-
-	def link_unique(self, arg):
 		self.childs = set()
-		super().link(arg)
-		self.output = arg
+		self.output = zencad.assemble.unit(parent=self)
+		
+	def link(self, arg):
+		self.output.link(arg)
+
+#	def link_unique(self, arg):
+#		super().link(arg)
+#		self.output = arg
 
 	def evaluate_accelerations_without_constraits(self):
 		raise NotImplementedError
 
 	def update_global_speed(self):
 		self.global_spdscr = self.spdscr.rotate_by(self.global_location)
+
+	def update_global_acceleration(self):
+		self.global_accscr = self.accscr.rotate_by(self.global_location)
 
 	def update_local_speed(self):
 		self.spdscr = self.global_spdscr.inverse_rotate_by(self.global_location)
@@ -123,7 +128,7 @@ class kinematic_unit_one_axis(kinematic_unit):
 		self.axmul = self.ax * self.mul
 		self.speed = 0
 		self.acceleration = 0
-		self.dempher_koeff = 10
+		self.dempher_koeff = 0
 
 	#override
 	def senses(self):
@@ -145,9 +150,13 @@ class kinematic_unit_one_axis(kinematic_unit):
 		s = self.sensivity()
 		return screw(ang=s[0],lin=s[1])
 
+	def global_sensivity(self):
+		return self.sensivity_screw().rotate_by(self.global_location)
+
 	def dynstep(self, delta):
 		self.coord += self.speed * delta 
 		self.speed += self.acceleration * delta - self.speed * self.dempher_koeff * delta
+		self.set_speed(self.speed)
 		self.set_coord(self.coord, deep=False, view=False)
 
 	@abstractmethod
@@ -156,20 +165,37 @@ class kinematic_unit_one_axis(kinematic_unit):
 
 	def set_speed(self, spd):
 		self.speed = spd
+		self.spdscr = self.sensivity_screw() * spd
+		self.update_global_speed()
+
+	def set_acceleration(self, acc):
+		self.acceleration = acc
+		self.accscr = self.sensivity_screw() * acc
+		self.update_global_acceleration()
 
 	def evaluate_accelerations_without_constraits(self):
 		#print("global_force_reduction", self.global_force_reduction)
-		carried_force_reduction = self.global_force_reduction.carry(self.complex_inertia.veccm)
+		#carried_force_reduction = self.global_force_reduction.force_carry(self.complex_inertia.veccm)
 		#print("carried_force_reduction", carried_force_reduction)
-		posible_acceleration = self.complex_inertia.force_to_acceleration(carried_force_reduction)
+		#print(self.name, "accelev0", self.complex_inertia.veccm)
+		#print(self.name, "accelev1", self.complex_inertia.matrix)
+		
+		#posible_acceleration = self.complex_inertia.guigens_transform(-self.complex_inertia.veccm) \
+		#	.force_to_acceleration(self.global_force_reduction)
+
+		#print(self.name, "accelev2", self.complex_inertia.guigens_transform(-self.complex_inertia.veccm).matrix)
+
+		sens = self.global_sensivity()
+		projection = self.global_force_reduction.dot(sens)
+
 		#print("posible_acceleration", posible_acceleration)
-		posible_acceleration = posible_acceleration.carry(-self.complex_inertia.veccm)
 		#print("carried_posible_acceleration", posible_acceleration)
 		#print(self.complex_inertia)
 		#print(posible_acceleration)
-		sens = self.sensivity_screw().rotate_by(self.global_location)
+		#sens = self.sensivity_screw().rotate_by(self.global_location)
 		#print(sens)
-		self.acceleration = posible_acceleration.dot(sens)
+		self.set_acceleration(projection / self.inertia_koefficient)
+
 
 class rotator(kinematic_unit_one_axis):
 	def sensivity(self):
