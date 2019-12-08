@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import cProfile
+import numpy
 import zencad
 from zencad import *
 import time
@@ -8,6 +9,7 @@ import zencad.libs.treedy as treedy
 import zencad.libs.forces as forces
 from zencad.libs.screw import screw
 import zencad.libs.kinematic as kinematic
+import zencad.libs.inertia as inertia
 
 L = 100
 rot = kinematic.rotator(name="RBODY",ax=(0,0,1))
@@ -33,16 +35,18 @@ aaaa.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)), color=zencad.color.blue)
 bbbb.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
 aaaaa.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)), color=zencad.color.blue)
 bbbbb.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
-treedy.attach_inertia(a, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
-treedy.attach_inertia(b, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
-treedy.attach_inertia(aa, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
-treedy.attach_inertia(bb, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
-treedy.attach_inertia(aaa, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
-treedy.attach_inertia(bbb, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
-treedy.attach_inertia(aaaa, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
-treedy.attach_inertia(bbbb, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
-treedy.attach_inertia(aaaaa, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
-treedy.attach_inertia(bbbbb, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
+inertia.attach_inertia(rot.output, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(body, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(a, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(b, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(aa, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(bb, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(aaa, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(bbb, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(aaaa, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(bbbb, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(aaaaa, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(bbbbb, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
 
 rra = kinematic.rotator(name="RRA",ax=(0,0,1), location=translate(0,-20,0), parent=body)
 rrb = kinematic.rotator(name="RRB",ax=(0,0,1), location=translate(0,20,0)*rotateZ(deg(180)), parent=body)
@@ -56,6 +60,9 @@ raaaa = kinematic.rotator(name="RAAAA",ax=(0,1,0))
 rbbbb = kinematic.rotator(name="RBBBB",ax=(0,1,0))
 raaaaa = kinematic.rotator(name="RAAAAA",ax=(0,1,0))
 rbbbbb = kinematic.rotator(name="RBBBBB",ax=(0,1,0))
+
+inertia.attach_inertia(rra.output, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
+inertia.attach_inertia(rrb.output, mass=0.1, Ix=0.1, Iy=0.1, Iz=0.1, radius=pyservoce.vector3(0,0,L))
 
 raa.relocate(up(L))
 rbb.relocate(up(L))
@@ -89,23 +96,23 @@ raaaaa.link_directly(aaaaa)
 rbbbbb.link_directly(bbbbb)
 rot.link_directly(body)
 
-rra.set_coord(deg(20))
-rra.set_coord(deg(10))
-ra.set_coord(deg(90))
-rb.set_coord(deg(90))
+#rra.set_coord(deg(20))
+#rra.set_coord(deg(10))
+#ra.set_coord(deg(90))
+#rb.set_coord(deg(90))
 
 rot.location_update()
 
-forces.gravity(unit=a,vec=(0,0,-5081))
-forces.gravity(unit=b,vec=(0,0,-5081))
-forces.gravity(unit=aa,vec=(0,0,-5081))
-forces.gravity(unit=bb,vec=(0,0,-5081))
-forces.gravity(unit=aaa,vec=(0,0,-5081))
-forces.gravity(unit=bbb,vec=(0,0,-5081))
-forces.gravity(unit=aaaa,vec=(0,0,-5081))
-forces.gravity(unit=bbbb,vec=(0,0,-5081))
-forces.gravity(unit=aaaaa,vec=(0,0,-5081))
-forces.gravity(unit=bbbbb,vec=(0,0,-5081))
+#forces.gravity(unit=a,vec=(0,0,-5081))
+#forces.gravity(unit=b,vec=(0,0,-5081))
+#forces.gravity(unit=aa,vec=(0,0,-5081))
+#forces.gravity(unit=bb,vec=(0,0,-5081))
+#forces.gravity(unit=aaa,vec=(0,0,-5081))
+#forces.gravity(unit=bbb,vec=(0,0,-5081))
+#forces.gravity(unit=aaaa,vec=(0,0,-5081))
+#forces.gravity(unit=bbbb,vec=(0,0,-5081))
+#forces.gravity(unit=aaaaa,vec=(0,0,-5081))
+#forces.gravity(unit=bbbbb,vec=(0,0,-5081))
 
 KD = 0
 ra.dempher_koeff = KD
@@ -121,35 +128,32 @@ rbbbb.dempher_koeff = KD
 raaaaa.dempher_koeff = KD
 rbbbbb.dempher_koeff = KD
 
-KD = 0
-mot = forces.motor(unit=rot)
-dph_rra = forces.dempher(unit=rra, koeff=KD)
-dph_ra = forces.dempher(unit=ra, koeff=KD)
-dph_raa = forces.dempher(unit=raa, koeff=KD)
-dph_raaa = forces.dempher(unit=raaa, koeff=KD)
-dph_raaaa = forces.dempher(unit=raaaa, koeff=KD)
-dph_raaaaa = forces.dempher(unit=raaaaa, koeff=KD)
-dph_rrb = forces.dempher(unit=rrb, koeff=KD)
-dph_rb = forces.dempher(unit=rb, koeff=KD)
-dph_rbb = forces.dempher(unit=rbb, koeff=KD)
-dph_rbbb = forces.dempher(unit=rbbb, koeff=KD)
-dph_rbbbb = forces.dempher(unit=rbbbb, koeff=KD)
-dph_rbbbbb = forces.dempher(unit=rbbbbb, koeff=KD)
+#KD = 0
+#mot = forces.motor(unit=rot)
+#dph_rra = forces.dempher(unit=rra, koeff=KD)
+#dph_ra = forces.dempher(unit=ra, koeff=KD)
+#dph_raa = forces.dempher(unit=raa, koeff=KD)
+#dph_raaa = forces.dempher(unit=raaa, koeff=KD)
+#dph_raaaa = forces.dempher(unit=raaaa, koeff=KD)
+#dph_raaaaa = forces.dempher(unit=raaaaa, koeff=KD)
+#dph_rrb = forces.dempher(unit=rrb, koeff=KD)
+#dph_rb = forces.dempher(unit=rb, koeff=KD)
+#dph_rbb = forces.dempher(unit=rbb, koeff=KD)
+#dph_rbbb = forces.dempher(unit=rbbb, koeff=KD)
+#dph_rbbbb = forces.dempher(unit=rbbbb, koeff=KD)
+#dph_rbbbbb = forces.dempher(unit=rbbbbb, koeff=KD)
 
 #rot.set_coord(deg(10))
 
 t = treedy.tree_dynamic_solver(rot)
-t.set_linear_scale(1)
+
+numpy.set_printoptions(threshold=sys.maxsize, linewidth=10000)
+print(t.reaction_solver.mass_matrix())
 
 #s.set_speed_screw(screw(lin=(0.1,0.1,0.1),ang=(0,0,0)))
 
 #t.calculate_impulses()
 
-t.print_state()
-t.print_pre_kinematic_frames()
-t.print_post_inertial_objects()
-t.print_post_force_sources()
-t.print_impulses()
 
 cancel = False
 DELTA = 0
