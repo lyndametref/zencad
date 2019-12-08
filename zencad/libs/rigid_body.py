@@ -43,7 +43,7 @@ class rigid_body:
 
 		return screw(
 			lin= - mass * aspd.cross(aspd.cross(rho)),
-			ang= aspd.cross(imat*aspd)
+			ang= - aspd.cross(imat*aspd)
 		)
 
 def kinframe_inertial_objects(kinframe):
@@ -85,11 +85,26 @@ def kinframe_force_sources(kinframe):
 def inertia_of_objects(kinframe, iobjects):
 	arr = []
 	for iner in iobjects:
-		etrans = iner.unit.global_pose * kinframe.output.global_pose.inverse() 
-		arr.append(iner.get_transformed_inertia(etrans))
-	#print(arr)
+		mov = -(kinframe.global_pose * iner.unit.global_pose.inverse()).translation()
+
+		#print(kinframe.global_pose.inverse() * iner.unit.global_pose)
+		#print(kinframe.global_pose * iner.unit.global_pose.inverse())
+		#print(iner.unit.global_pose.inverse() * kinframe.global_pose)
+		#print(iner.unit.global_pose * kinframe.global_pose.inverse())
+
+		#print(mov)
+		inertia = iner.get_rotated_inertia(iner.unit.global_pose)
+		inertia.radius += mov
+		arr.append(inertia)
+		#exit(0)
+
+	result = zencad.libs.inertia.complex_inertia(arr)
+	result = result.rotate(kinframe.global_pose.inverse())
+
+	#print(result)
 	#exit(0)
-	return zencad.libs.inertia.complex_inertia(arr)
+
+	return result
 
 
 def rigid_body_from_kinframe(kinframe):

@@ -75,7 +75,7 @@ class constrait_connection:
 			(self.constrait.constrait_screws()[i] * reactions[i][0])
 		for i in range(self.rank()) ]
 
-		return [ r.force_carry(arm) for r in sreactions ]
+		return [ r.force_carry(-arm) for r in sreactions ]
 
 	def update_globals(self):
 		pass
@@ -113,9 +113,13 @@ def make_constraits_from_kinframe(kinframe):
 
 	if kinframe.base_kinframe:
 		pre = kinframe.base_kinframe.rigid_body
+		radius =-(kinframe.global_pose * pre.global_pose.inverse()).translation()
+		#print(radius)
+		#exit()
 		c.attach_negative_connection(
 			body=pre, 
-			radius= (kinframe.base_kinframe.output.global_pose * kinframe.global_pose.inverse()).translation()
+			radius= radius
 		)
+
 
 	return c

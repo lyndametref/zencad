@@ -45,7 +45,7 @@ brot.dempher_koeff = 0
 #treedy.attach_inertia(a, mass=1, Ix=0, Iy=0, Iz=0, pose=up(L/2))
 #treedy.attach_inertia(b, mass=1, Ix=0, Iy=0, Iz=0, pose=up(L/2))
 inertia.attach_inertia(ma, mass=1, Ix=1, Iy=1, Iz=1)
-inertia.attach_inertia(mb, mass=100, Ix=1, Iy=1, Iz=1)
+inertia.attach_inertia(mb, mass=1, Ix=1, Iy=1, Iz=1)
 
 #forces.gravity(unit=a,vec=(0,0,-9081))
 #forces.gravity(unit=b,vec=(0,0,-9081))
@@ -55,12 +55,13 @@ inertia.attach_inertia(mb, mass=100, Ix=1, Iy=1, Iz=1)
 #dph1 = forces.dempher(unit=arot, koeff=50000)
 #dph2 = forces.dempher(unit=brot, koeff=50000)
 
+base.relocate(rotateZ(deg(90)))
+arot.set_coord(deg(90))
+
 brot.set_speed(0.2)
 t = treedy.tree_dynamic_solver(base)
 
 
-base.relocate(rotateZ(deg(-90)))
-arot.set_coord(deg(90))
 
 #t.print_reaction_lagrange_multipliers()
 #t.print_local_inertial_objects()

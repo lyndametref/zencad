@@ -201,10 +201,10 @@ class tree_dynamic_solver(dynamic_solver):
 			rforce = kinframe.force_reduction.dot(kinframe.global_sensivity())
 			accel = rforce / masskoeff
 			#print(kinframe.global_sensivity())
-			#print(masskoeff)
-			#print(kinframe.global_inertia)
-			print(kinframe.force_reduction)
 			#print(kinframe.rigid_body.global_inertia)
+			#print(kinframe.global_inertia)
+			#print(kinframe.force_reduction)
+			print(kinframe.rigid_body.global_inertia)
 			#print(accel)
 			#print(kinframe.rigid_body.global_inertia)
 			kinframe.set_acceleration(accel)

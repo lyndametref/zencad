@@ -138,14 +138,15 @@ class inertial_object:
 		return transrot * self.matrix * rot
 		#return self.matrix
 
-	def get_transformed_inertia(self, trans):
+	def get_rotated_inertia(self, trans):
 		#print(trans)
 		#print(self.transformed_matrix(trans))
 		#print(self.matrix)
 		return inertia(
 			mass=self.mass, 
 			matrix=self.transformed_matrix(trans), 
-			radius=trans(self.radius) + trans.translation())
+			radius=trans(self.radius)
+		)
 
 	def update_globals(self):
 		#self.global_pose = self.unit.global_pose * self.pose
