@@ -23,15 +23,15 @@ bbbb = zencad.assemble.unit(name="BBBB")
 aaaaa = zencad.assemble.unit(name="AAAAA")
 bbbbb = zencad.assemble.unit(name="BBBBB")
 
-a.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
+a.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)), color=zencad.color.blue)
 b.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
-aa.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
+aa.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)), color=zencad.color.blue)
 bb.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
-aaa.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
+aaa.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)), color=zencad.color.blue)
 bbb.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
-aaaa.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
+aaaa.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)), color=zencad.color.blue)
 bbbb.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
-aaaaa.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
+aaaaa.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)), color=zencad.color.blue)
 bbbbb.add_shape((cylinder(h=L, r=5)+sphere(10).up(L)))
 treedy.attach_inertia(a, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
 treedy.attach_inertia(b, mass=0.1, Ix=0, Iy=0, Iz=0, pose=up(L))
@@ -50,12 +50,12 @@ ra = kinematic.rotator(name="RA",ax=(1,0,0))
 rb = kinematic.rotator(name="RB",ax=(1,0,0))
 raa = kinematic.rotator(name="RAA",ax=(0,1,0))
 rbb = kinematic.rotator(name="RBB",ax=(0,1,0))
-raaa = kinematic.rotator(name="RAA",ax=(0,1,0))
-rbbb = kinematic.rotator(name="RBB",ax=(0,1,0))
-raaaa = kinematic.rotator(name="RAA",ax=(0,1,0))
-rbbbb = kinematic.rotator(name="RBB",ax=(0,1,0))
-raaaaa = kinematic.rotator(name="RAA",ax=(0,1,0))
-rbbbbb = kinematic.rotator(name="RBB",ax=(0,1,0))
+raaa = kinematic.rotator(name="RAAA",ax=(0,1,0))
+rbbb = kinematic.rotator(name="RBBB",ax=(0,1,0))
+raaaa = kinematic.rotator(name="RAAAA",ax=(0,1,0))
+rbbbb = kinematic.rotator(name="RBBBB",ax=(0,1,0))
+raaaaa = kinematic.rotator(name="RAAAAA",ax=(0,1,0))
+rbbbbb = kinematic.rotator(name="RBBBBB",ax=(0,1,0))
 
 raa.relocate(up(L))
 rbb.relocate(up(L))
@@ -66,67 +66,75 @@ rbbbb.relocate(up(L))
 raaaaa.relocate(up(L))
 rbbbbb.relocate(up(L))
 
-forces.gravity(unit=a,vec=(0,0,-5081)).attach(a)
-forces.gravity(unit=b,vec=(0,0,-5081)).attach(b)
-forces.gravity(unit=aa,vec=(0,0,-5081)).attach(aa)
-forces.gravity(unit=bb,vec=(0,0,-5081)).attach(bb)
-forces.gravity(unit=aaa,vec=(0,0,-5081)).attach(aaa)
-forces.gravity(unit=bbb,vec=(0,0,-5081)).attach(bbb)
-forces.gravity(unit=aaaa,vec=(0,0,-5081)).attach(aaaa)
-forces.gravity(unit=bbbb,vec=(0,0,-5081)).attach(bbbb)
-forces.gravity(unit=aaaaa,vec=(0,0,-5081)).attach(aaaaa)
-forces.gravity(unit=bbbbb,vec=(0,0,-5081)).attach(bbbbb)
+
+rra.link_directly(ra)
+rrb.link_directly(rb)
+ra.link_directly(a)
+rb.link_directly(b)
+a.link(raa)
+b.link(rbb)
+raa.link_directly(aa)
+rbb.link_directly(bb)
+aa.link(raaa)
+bb.link(rbbb)
+raaa.link_directly(aaa)
+rbbb.link_directly(bbb)
+aaa.link(raaaa)
+bbb.link(rbbbb)
+raaaa.link_directly(aaaa)
+rbbbb.link_directly(bbbb)
+aaaa.link(raaaaa)
+bbbb.link(rbbbbb)
+raaaaa.link_directly(aaaaa)
+rbbbbb.link_directly(bbbbb)
+rot.link_directly(body)
 
 rra.set_coord(deg(20))
 rra.set_coord(deg(10))
 ra.set_coord(deg(90))
 rb.set_coord(deg(90))
 
-#ra.dempher_koeff = 20
-#rb.dempher_koeff = 20
-#rra.dempher_koeff = 20
-#rrb.dempher_koeff = 20
-#raa.dempher_koeff = 20
-#rbb.dempher_koeff = 20
-#raaa.dempher_koeff = 20
-#rbbb.dempher_koeff = 20
-#raaaa.dempher_koeff = 20
-#rbbbb.dempher_koeff = 20
-#raaaaa.dempher_koeff = 20
-#rbbbbb.dempher_koeff = 20
+rot.location_update()
 
-KD = 1000000
+forces.gravity(unit=a,vec=(0,0,-5081))
+forces.gravity(unit=b,vec=(0,0,-5081))
+forces.gravity(unit=aa,vec=(0,0,-5081))
+forces.gravity(unit=bb,vec=(0,0,-5081))
+forces.gravity(unit=aaa,vec=(0,0,-5081))
+forces.gravity(unit=bbb,vec=(0,0,-5081))
+forces.gravity(unit=aaaa,vec=(0,0,-5081))
+forces.gravity(unit=bbbb,vec=(0,0,-5081))
+forces.gravity(unit=aaaaa,vec=(0,0,-5081))
+forces.gravity(unit=bbbbb,vec=(0,0,-5081))
+
+KD = 0
+ra.dempher_koeff = KD
+rb.dempher_koeff = KD
+rra.dempher_koeff = KD
+rrb.dempher_koeff = KD
+raa.dempher_koeff = KD
+rbb.dempher_koeff = KD
+raaa.dempher_koeff = KD
+rbbb.dempher_koeff = KD
+raaaa.dempher_koeff = KD
+rbbbb.dempher_koeff = KD
+raaaaa.dempher_koeff = KD
+rbbbbb.dempher_koeff = KD
+
+KD = 0
 mot = forces.motor(unit=rot)
+dph_rra = forces.dempher(unit=rra, koeff=KD)
 dph_ra = forces.dempher(unit=ra, koeff=KD)
 dph_raa = forces.dempher(unit=raa, koeff=KD)
 dph_raaa = forces.dempher(unit=raaa, koeff=KD)
 dph_raaaa = forces.dempher(unit=raaaa, koeff=KD)
 dph_raaaaa = forces.dempher(unit=raaaaa, koeff=KD)
+dph_rrb = forces.dempher(unit=rrb, koeff=KD)
 dph_rb = forces.dempher(unit=rb, koeff=KD)
 dph_rbb = forces.dempher(unit=rbb, koeff=KD)
 dph_rbbb = forces.dempher(unit=rbbb, koeff=KD)
 dph_rbbbb = forces.dempher(unit=rbbbb, koeff=KD)
 dph_rbbbbb = forces.dempher(unit=rbbbbb, koeff=KD)
-
-rra.link(ra)
-rrb.link(rb)
-ra.link(a)
-rb.link(b)
-a.link(raa)
-b.link(rbb)
-aa.link(raaa)
-bb.link(rbbb)
-aaa.link(raaaa)
-bbb.link(rbbbb)
-raa.link(aa)
-rbb.link(bb)
-raaa.link(aaa)
-rbbb.link(bbb)
-raaaa.link(aaaa)
-rbbbb.link(bbbb)
-raaaaa.link(aaaaa)
-rbbbbb.link(bbbbb)
-rot.link(body)
 
 #rot.set_coord(deg(10))
 
@@ -172,7 +180,7 @@ def evaluate():
 
 		modeltime +=delta
 		spd = math.cos((modeltime)*2) + 1.5
-		#rot.set_speed(4 * spd)
+		rot.set_speed(4 * spd)
 		#mot.set_moment(100)
 
 		print("HERE", rot.global_force_reduction)

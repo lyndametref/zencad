@@ -29,7 +29,7 @@ class unit:
 		self.parent = parent
 		self.shape = shape
 		self.location = evalcache.unlazy_if_need(location)
-		self.global_location = self.location
+		self.global_pose = self.location
 		self.name = name
 		self.color = None
 		self.dispobjects = []
@@ -50,10 +50,10 @@ class unit:
 
 	def location_update(self, deep=True, view=True):
 		if self.parent is None:
-			self.global_location = self.location
+			self.global_pose = self.location
 
 		else:
-			self.global_location = self.parent.global_location * self.location
+			self.global_pose = self.parent.global_pose * self.location
 
 		if deep:
 			for c in self.childs:
@@ -61,6 +61,11 @@ class unit:
 
 		if view:
 			self._apply_view_location(False)
+
+		self.update_globals()
+
+	def update_globals(self):
+		pass
 
 	def relocate(self, location, deep=False, view=True):
 		self.location = evalcache.unlazy_if_need(location)
@@ -127,7 +132,7 @@ class unit:
 		view. Если deep, применить рекурсивно."""
 
 		for v in self.views:
-			v.set_location(self.global_location)
+			v.set_location(self.global_pose)
 
 		if deep:
 			for c in self.childs:

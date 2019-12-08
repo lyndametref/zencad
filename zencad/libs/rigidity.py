@@ -59,7 +59,7 @@ class force_model_mass_point(force_model):
 		информации о выходной и локальной."""
 
 		ltrans = self.parent.location
-		gtrans = self.parent.global_location
+		gtrans = self.parent.global_pose
 
 		lmove = ltrans.translation()
 		gravity = zencad.vector3(self.vec)
@@ -86,8 +86,8 @@ class force_model_algorithm:
 	def _force_evaluation(self, unit):
 		output_force = screw()
 		for c in unit.childs:
-			loc = unit.global_location.inverse() * c.global_location
-			output_force += self._force_evaluation(c).transform(loc) #inverse?
+			loc = unit.global_pose.inverse() * c.global_pose
+			output_force += self._force_evaluation(c).rotate_by(loc) #inverse?
 
 		unit.force_model.output_force = output_force
 		#unit.force_model.evaluate_local_force()

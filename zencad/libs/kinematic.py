@@ -2,12 +2,15 @@ import zencad.assemble
 import zencad.libs.physics
 import zencad.libs.screw
 import zencad.libs.inertia
+import zencad.libs.constraits as constraits
 from zencad.libs.screw import screw
 from zencad.libs.inertia import inertia
 import pyservoce
 import numpy
 
 from abc import ABC, abstractmethod
+
+
 
 #class kynematic_unit_output(zencad.assemble.unit):
 #	def __init__(self, *args, **kwargs):
@@ -26,21 +29,22 @@ class kinematic_frame(zencad.assemble.unit):
 	def link(self, arg):
 		self.output.link(arg)
 
-#	def link_unique(self, arg):
-#		super().link(arg)
-#		self.output = arg
+	def link_directly(self, arg):
+		self.childs = set()
+		super().link(arg)
+		self.output = arg
 
 	def evaluate_accelerations_without_constraits(self):
 		raise NotImplementedError
 
 	def update_global_speed(self):
-		self.global_spdscr = self.spdscr.rotate_by(self.global_location)
+		self.global_spdscr = self.spdscr.rotate_by(self.global_pose)
 
 	def update_global_acceleration(self):
-		self.global_accscr = self.accscr.rotate_by(self.global_location)
+		self.global_accscr = self.accscr.rotate_by(self.global_pose)
 
 	def update_local_speed(self):
-		self.spdscr = self.global_spdscr.inverse_rotate_by(self.global_location)
+		self.spdscr = self.global_spdscr.inverse_rotate_by(self.global_pose)
 
 	def set_speed_screw(self, spdscr):
 		self.spdscr = spdscr
@@ -52,19 +56,19 @@ class kinematic_frame(zencad.assemble.unit):
 	def linear_speed(self):
 		return self.spdscrew.lin
 	
-	def reduce_forces_as_prereaction(self):
-		self.output.reduce_forces()
-		trans = self.output.location
-		mov = - trans.translation()
-		rot = trans.rotation().inverse()
-		self.prereaction = self.output.reaction.rotate_by_quat(rot).carry(-mov)
+	#def reduce_forces_as_prereaction(self):
+	#	self.output.reduce_forces()
+	#	trans = self.output.location
+	#	mov = - trans.translation()
+	#	rot = trans.rotation().inverse()
+	#	self.prereaction = self.output.reaction.rotate_by_quat(rot).carry(-mov)
 
-	def reduce_forces(self):
-		self.reduce_forces_as_prereaction()
-		self.divide_prereaction()
+	#def reduce_forces(self):
+	#	self.reduce_forces_as_prereaction()
+	#	self.divide_prereaction()
 
-	def divide_prereaction(self):
-		raise NotImplementedError
+	#def divide_prereaction(self):
+	#	raise NotImplementedError
 
 	def integrate_position(self, delta):
 		return
@@ -129,6 +133,7 @@ class kinematic_unit_one_axis(kinematic_unit):
 		self.speed = 0
 		self.acceleration = 0
 		self.dempher_koeff = 0
+		self.reaction_quantity = 5
 
 	#override
 	def senses(self):
@@ -151,7 +156,7 @@ class kinematic_unit_one_axis(kinematic_unit):
 		return screw(ang=s[0],lin=s[1])
 
 	def global_sensivity(self):
-		return self.sensivity_screw().rotate_by(self.global_location)
+		return self.sensivity_screw().rotate_by(self.global_pose)
 
 	def dynstep(self, delta):
 		self.coord += self.speed * delta 
@@ -174,30 +179,19 @@ class kinematic_unit_one_axis(kinematic_unit):
 		self.update_global_acceleration()
 
 	def evaluate_accelerations_without_constraits(self):
-		#print("global_force_reduction", self.global_force_reduction)
-		#carried_force_reduction = self.global_force_reduction.force_carry(self.complex_inertia.veccm)
-		#print("carried_force_reduction", carried_force_reduction)
-		#print(self.name, "accelev0", self.complex_inertia.veccm)
-		#print(self.name, "accelev1", self.complex_inertia.matrix)
-		
-		#posible_acceleration = self.complex_inertia.guigens_transform(-self.complex_inertia.veccm) \
-		#	.force_to_acceleration(self.global_force_reduction)
-
-		#print(self.name, "accelev2", self.complex_inertia.guigens_transform(-self.complex_inertia.veccm).matrix)
-
 		sens = self.global_sensivity()
 		projection = self.global_force_reduction.dot(sens)
-
-		#print("posible_acceleration", posible_acceleration)
-		#print("carried_posible_acceleration", posible_acceleration)
-		#print(self.complex_inertia)
-		#print(posible_acceleration)
-		#sens = self.sensivity_screw().rotate_by(self.global_location)
-		#print(sens)
 		self.set_acceleration(projection / self.inertia_koefficient)
 
 
 class rotator(kinematic_unit_one_axis):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.constrait = constraits.rotator_constrait(self.ax)
+
+	def update_globals(self):
+		self.constrait.axis = self.global_sensivity().ang
+
 	def sensivity(self):
 		"""Возвращает тензор производной по положению
 		в собственной системе координат в формате (w, v)"""
@@ -344,7 +338,7 @@ class kinematic_chain:
 		trsf = pyservoce.nulltrans()
 		senses = []
 
-		outtrans = self.chain[0].global_location
+		outtrans = self.chain[0].global_pose
 
 		"""Два разных алгоритма получения масива тензоров чувствительности.
 		Первый - проход по цепи с аккумулированием тензора трансформации.
@@ -379,7 +373,7 @@ class kinematic_chain:
 			for link in self.kinematic_pairs:
 				lsenses = link.senses()
 				
-				linktrans = link.output.global_location
+				linktrans = link.output.global_pose
 				trsf = linktrans.inverse() * outtrans
 			
 				radius = trsf.translation()
@@ -398,7 +392,7 @@ class kinematic_chain:
 
 		"""Для удобства интерпретации удобно перегнать выход в интуитивный базис."""
 		if basis is not None:
-			btrsf = basis.global_location
+			btrsf = basis.global_pose
 			#trsf =  btrsf * outtrans.inverse()
 			#trsf =  outtrans * btrsf.inverse() #ok
 			trsf =  btrsf.inverse() * outtrans #ok
@@ -416,3 +410,11 @@ def attach_kinematic_chains(unit):
 		attach_kinematic_chains(u)
 
 	unit.kinematic_chain = kinematic_chain(unit)
+
+def for_each_units_in_kinframe(kinframe, doit):
+	def func(unit):
+		doit(unit)
+		if not isinstance(unit, kinematic_frame):
+			for u in unit.childs:
+				func(u)
+	func(kinframe.output)		

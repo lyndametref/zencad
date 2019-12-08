@@ -23,7 +23,7 @@ class force_unit:
 		self.pose = pose
 
 	def current_global_pose(self):
-		return self.unit.global_location * self.pose
+		return self.unit.global_pose * self.pose
 
 	def force(self):
 		raise NotImplementedError()
@@ -50,7 +50,7 @@ class constant_gravity_funit(force_unit):
 		self._force = screw(lin=gravity, ang=(0,0,0))
 
 	def force(self):
-		curpose = self.unit.global_location * self.pose
+		curpose = self.unit.global_pose * self.pose
 		self._global_force = self._force.inverse_rotate_by(curpose)
 		return self._global_force
 

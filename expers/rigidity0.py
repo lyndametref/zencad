@@ -2,7 +2,7 @@
 
 from zencad import *
 import zencad.malgo
-import zencad.cynematic
+import zencad.libs.kinematic
 import zencad.libs.rigidity
 import zencad.geom.curve3
 from zencad.libs.screw import screw
@@ -59,7 +59,7 @@ class rod:
 		#self.els[-1].link(zencad.assemble.unit(shape = cylinder(r=5, h=20).rotate(rvec/nrvec, nrvec)))
 
 		self.force_model = zencad.libs.rigidity.force_model_mass_point(self, 0.5, vec=(0,0,-9.81))
-		self.rotator = zencad.cynematic.rotator(parent=self.els[-1].connector, ax=ax)
+		self.rotator = zencad.libs.kinematic.rotator(parent=self.els[-1].connector, ax=ax)
 
 		self.input = self.els[0]
 		self.output = self.rotator
@@ -76,7 +76,7 @@ r1 = rod(200, 1, ax=(0,0,1))
 r2 = rod(200, 1, ax=(0,1,0))
 
 mass = mass()
-rot = zencad.cynematic.rotator(ax=(0,1,0))
+rot = zencad.libs.kinematic.rotator(ax=(0,1,0))
 rot.link(r0.input)
 r0.output.link(r1.input)
 r1.output.link(r2.input)
@@ -124,11 +124,11 @@ intcurve_model = zencad.interpolate(
 	closed=True)
 disp(intcurve_model)
 
-tmodel = mass.global_location
+tmodel = mass.global_pose
 
 starttime = time.time() 
 lasttime = time.time()
-chain = zencad.cynematic.cynematic_chain(mass)
+chain = zencad.libs.kinematic.kinematic_chain(mass)
 iteration = 0
 def animate(wdg):
 	global tmodel
@@ -159,7 +159,7 @@ def animate(wdg):
 	#tspd = numpy.array([-TSPD,0,0])
 	#tmodel = pyservoce.translate(*(tspd * DELTATIME)) * tmodel
 	tmodel = translate(*intcurve.value((curtime - starttime)*50))
-	current = mass.global_location	
+	current = mass.global_pose	
 
 	ftrans = current.inverse() * tmodel
 	ttrans = ftrans.translation() * K
@@ -180,7 +180,7 @@ def animate(wdg):
 
 show(animate=animate)
 	
-	#print(mass.global_location)
+	#print(mass.global_pose)
 	
 #for e in els:
 #	print(e.force_model.output_force)
@@ -193,7 +193,7 @@ show(animate=animate)
 ##		d.force_model.evaluate_input_force()
 ##		els
 #		
-##		force_screw = d.force_model.output_force.inverse_transform(d.global_location)
+##		force_screw = d.force_model.output_force.inverse_transform(d.global_pose)
 ##		print(force_screw)
 #
 #	for d in els:

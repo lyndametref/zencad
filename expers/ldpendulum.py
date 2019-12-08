@@ -3,15 +3,11 @@
 import zencad
 from zencad import *
 import time
-import zencad.libs.treedy as treedy
+import zencad.libs.lagrange as lagrange
 import zencad.libs.forces as forces
 import zencad.libs.inertia as inertia
 from zencad.libs.screw import screw
 import zencad.libs.kinematic as kinematic
-
-import numpy
-
-numpy.set_printoptions(precision=1, linewidth=160)
 
 L = 100
 arot = kinematic.rotator(name="AROT",ax=(1,0,0))
@@ -19,19 +15,18 @@ brot = kinematic.rotator(name="BROT",ax=(1,0,0))
 a = zencad.assemble.unit(name="A")
 b = zencad.assemble.unit(name="B")
 ma = zencad.assemble.unit(name="MA")
-mb = zencad.assemble.unit(name="MB", shape=sphere(10))
+mb = zencad.assemble.unit(name="MB")
 
 a.add_shape(cylinder(r=5, h=L))
 b.add_shape(cylinder(r=5, h=L))
 
-base = zencad.assemble.unit()
-
-base.link(arot)
 arot.link(a)
 a.link(brot)
 brot.link(b)
 
 brot.relocate(up(L))
+
+arot.set_coord(deg(90))
 
 a.link(ma)
 b.link(mb)
@@ -44,8 +39,8 @@ brot.dempher_koeff = 0
 
 #treedy.attach_inertia(a, mass=1, Ix=0, Iy=0, Iz=0, pose=up(L/2))
 #treedy.attach_inertia(b, mass=1, Ix=0, Iy=0, Iz=0, pose=up(L/2))
-inertia.attach_inertia(ma, mass=1, Ix=1, Iy=1, Iz=1)
-inertia.attach_inertia(mb, mass=100, Ix=1, Iy=1, Iz=1)
+#treedy.attach_inertia(ma, mass=1, Ix=0, Iy=0, Iz=0)
+inertia.attach_inertia(mb, mass=1, Ix=0, Iy=0, Iz=0)
 
 #forces.gravity(unit=a,vec=(0,0,-9081))
 #forces.gravity(unit=b,vec=(0,0,-9081))
@@ -55,35 +50,10 @@ inertia.attach_inertia(mb, mass=100, Ix=1, Iy=1, Iz=1)
 #dph1 = forces.dempher(unit=arot, koeff=50000)
 #dph2 = forces.dempher(unit=brot, koeff=50000)
 
-brot.set_speed(0.2)
-t = treedy.tree_dynamic_solver(base)
-
-
-base.relocate(rotateZ(deg(-90)))
-arot.set_coord(deg(90))
-
-#t.print_reaction_lagrange_multipliers()
-#t.print_local_inertial_objects()
-
-#print(brot.frame_inertia)
-
-#t.onestep(0.0001)
-
-#print(t.reaction_solver.solve())
-
-#print(t.reaction_solver.constraits)
-#print(t.reaction_solver.rigid_bodies)
-#
-#for r in t.reaction_solver.rigid_bodies:
-#	print(r.constrait_connections)
-#
-#exit(0)
-
-#t.onestep(delta=0.01)
-
-#print(arot.rigid_body.constrait_connections[0].constrait.constrait_screws())
-#print(arot.rigid_body.constrait_connections[0].constrait_screws())
-#print(arot.rigid_body.constrait_connections[0].constraits_screws_in_body_frame())
+brot.set_speed(1)
+t = lagrange.lagrange_solver(arot)
+t.print_reaction_lagrange_multipliers()
+t.print_local_inertial_objects()
 
 cancel = False
 DELTA = 0
@@ -99,7 +69,7 @@ def evaluate():
 	while True:
 		if cancel:
 			return
-		maxdelta = 0.02
+		maxdelta = 0.001
 		curtime = time.time()
 		delta = curtime - lasttime
 		lasttime = curtime
@@ -110,11 +80,10 @@ def evaluate():
 		DELTA = delta
 
 		t.onestep(delta=delta)
-		time.sleep(0.01)
-
+		time.sleep(0.00001)
 
 def animate(self):
-	base.location_update(deep=True, view=True)
+	arot.location_update(deep=True, view=True)
 
 import threading
 evalthr = threading.Thread(target=evaluate)
@@ -124,5 +93,5 @@ def close_handle():
 	global cancel
 	cancel = True
 
-disp(base)
+disp(arot)
 show(animate=animate, animate_step = 0.00001, close_handle=close_handle)

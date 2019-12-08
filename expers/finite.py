@@ -82,4 +82,4 @@ for i in range(5):
 
 r0.input.location_update()
 
-print(mass.global_location)
+print(mass.global_pose)

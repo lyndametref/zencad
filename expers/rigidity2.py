@@ -124,7 +124,7 @@ intcurve_model = zencad.interpolate(
 	closed=True)
 disp(intcurve_model)
 
-tmodel = mass.global_location
+tmodel = mass.global_pose
 
 starttime = time.time() 
 lasttime = time.time()
@@ -159,7 +159,7 @@ def animate(wdg):
 	#tspd = numpy.array([-TSPD,0,0])
 	#tmodel = pyservoce.translate(*(tspd * DELTATIME)) * tmodel
 	tmodel = translate(*intcurve.value((curtime - starttime)*50))
-	current = mass.global_location	
+	current = mass.global_pose	
 
 	ftrans = current.inverse() * tmodel
 	ttrans = ftrans.translation() * K
@@ -180,7 +180,7 @@ def animate(wdg):
 
 show(animate=animate)
 	
-	#print(mass.global_location)
+	#print(mass.global_pose)
 	
 #for e in els:
 #	print(e.force_model.output_force)
@@ -193,7 +193,7 @@ show(animate=animate)
 ##		d.force_model.evaluate_input_force()
 ##		els
 #		
-##		force_screw = d.force_model.output_force.inverse_transform(d.global_location)
+##		force_screw = d.force_model.output_force.inverse_transform(d.global_pose)
 ##		print(force_screw)
 #
 #	for d in els:

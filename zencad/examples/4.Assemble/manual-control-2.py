@@ -91,7 +91,7 @@ def animate(wdg):
 	target_location = translate(XSLD.value()/5000*120, YSLD.value()/5000*120, ZSLD.value()/5000*120)
 
 	sens = chain.sensivity()
-	error = LINKS[-1].rotator.output.global_location.inverse() * target_location
+	error = LINKS[-1].rotator.output.global_pose.inverse() * target_location
 
 	ttrans = error.translation() * K
 	rtrans = error.rotation().rotation_vector() * K 

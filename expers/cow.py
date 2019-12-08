@@ -161,7 +161,7 @@ def animate(wdg):
 	else: 
 		target_location = nulltrans()
 
-	location_error = cow.global_location.inverse() * target_location
+	location_error = cow.global_pose.inverse() * target_location
 
 	location_error_screw = screw.from_trans(location_error)	 
 	speed_error_screw = -speed_screw

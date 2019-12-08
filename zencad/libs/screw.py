@@ -115,3 +115,11 @@ class screw:
 
 def screw_of_vector(vec, arm):
 	return screw(lin=vec, ang=arm.cross(vec))
+
+
+
+def second_kinematic_carry(iacc, ispd, arm):
+	return screw(
+		lin = iacc.lin + iacc.ang.cross(arm) + ispd.ang.cross(ispd.ang.cross(arm)), 
+		ang = iacc.ang
+	)

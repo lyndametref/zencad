@@ -107,7 +107,7 @@ for i in range(50):
 
 targetno = [0,0,0,0,0,0,0,0]
 def serve_arm(arm, arm_chain, target, delta, side, no):
-	error = arm.arm_node_6.rot.global_location.inverse() * target
+	error = arm.arm_node_6.rot.global_pose.inverse() * target
 	sens =  arm_chain.sensivity()
 	
 	location_error = error.translation() * 4
@@ -130,7 +130,7 @@ def serve_arm(arm, arm_chain, target, delta, side, no):
 	#arm.arm_node_5.rot.set_coord(arm.arm_node_5.rot.coord + koeffs[6] * delta)
 	#arm.arm_node_6.rot.set_coord(arm.arm_node_6.rot.coord + koeffs[7] * delta)
 
-	if (arm.global_location.translation() - targets[side][targetno[no]+1].translation()).length() < 30:
+	if (arm.global_pose.translation() - targets[side][targetno[no]+1].translation()).length() < 30:
 		targetno[no] += 1
 
 target = [None]*8

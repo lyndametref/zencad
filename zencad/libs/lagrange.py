@@ -1,69 +1,46 @@
 from zencad.libs.screw import screw
+from zencad.libs.kinematic import *
+from zencad.libs.dynsolver import dynamic_solver
 
-class lagrange_multiplier:
+class lagrange_solver(dynamic_solver):
 	no = 0
 
 	@classmethod
-	def getno(cls):
-		ret = cls.no
+	def get_multiplier(cls):
 		cls.no += 1
-		return ret
+		return cls.no
 
-	def __init__(self):
-		self.no = self.getno()
+	def __init__(self, baseunit):
+		super().__init__(baseunit)
+		self.set_lagrange_multipliers(baseunit)
 
-	def __repr__(self):
-		return "l" + str(self.no)
+	def find_all_inertial_objects(self, unit, retarr):
+		if hasattr(unit, "inertial_object"):
+			retarr.append(unit.inertial_object)
 
-#class base_lagrange_screw:
-#	def __init__(self, ang, lin, lmultiplier=None):
-#		if lmultiplier is None:
-#			lmultiplier = lagrange_multiplier()
+		for u in unit.childs:
+			self.find_all_inertial_objects(u, retarr)
 
-#		self.screw = screw(ang=ang, lin=lin)
-#		self.lmultiplier = lmultiplier
+	def find_all_kinematic_frames(self, unit, retarr):
+		if isinstance(unit, zencad.libs.kinematic.kinematic_frame):
+			retarr.append(unit)
 
-#	def same(oth):
-#		return self.lmultiplier is oth.lmultiplier
+		for u in unit.childs:
+			self.find_all_kinematic_frames(u, retarr)
 
-class lagrange_polynom:
-	def __init__(self, dct):
-		self.dct = dct
+	def set_lagrange_multipliers(self, unit):
+		if isinstance(unit, kinematic_frame):
+			reaction_quantity = unit.reaction_quantity
+			lagrange_numbers = [ self.get_multiplier() for i in range(reaction_quantity) ]
+			unit.reaction_lagrange_numbers = lagrange_numbers
 
-	def __add__(self, oth):
-		dct = self.dct.copy()
-		for h in oth.dct.keys():
-			if h in dct:
-				dct[h] = dct[h] + oth.dct[h]
-			else:
-				dct[h] = oth.dct[h]
+		for u in unit.childs:
+			self.set_lagrange_multipliers(u)		
 
-	def __sub__(self, oth):
-		dct = self.dct.copy()
-		for h in oth.dct.keys():
-			if h in dct:
-				dct[h] = dct[h] - oth.dct[h]
-			else:
-				dct[h] = oth.dct[h]
+	def print_reaction_lagrange_multipliers(self):
+		for kinframe in self.kinematic_frames:
+			print(kinframe.name, kinframe.reaction_lagrange_numbers)
 
-	def foreach(self, lmb):
-		return lagrange_polynom({
-			l : lmb(v) for l, v in self.dct.items() 
-		})
 
-	def __repr__(self):
-		return repr(self.dct)
-
-def make_new_lagrange_polynom(lst):
-	return lagrange_polynom({
-		lagrange_multiplier() : l for l in lst
-	})
-
-def free(obj):
-	return lmultiplier_complex_screw({
-		lagrange_multiplier() : l for l in lst
-	})
-
-class lagrange_solver:
-	def __init__(self):
+	def onestep(self, delta):
 		pass

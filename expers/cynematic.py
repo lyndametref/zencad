@@ -70,7 +70,7 @@ def animate(wdg):
 	sens = chain.sensivity()
 	linsens = [l for r,l in sens]
 
-	current = c.out.global_location
+	current = c.out.global_pose
 	#diff = target
 	diff = current.inverse() * target
 
