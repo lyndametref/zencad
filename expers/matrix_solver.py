@@ -45,6 +45,7 @@ print(h)
 
 print("K")
 print(solver.inertia_forces())
+print(b.inertia_force())
 
 print("M")
 print(solver.mass_matrix())

@@ -61,12 +61,19 @@ arot.set_coord(deg(90))
 brot.set_speed(2)
 t = treedy.tree_dynamic_solver(base)
 
-#t.onestep(0.0001)
+t.onestep(0.0001)
 numpy.set_printoptions(suppress=True)
+
 print(t.reaction_solver.inertia_forces())
 print(t.reaction_solver.constrait_matrix()[0])
 print(t.reaction_solver.mass_matrix())
-exit(0)
+
+#print(brot.rigid_body.inertia_force())
+#print(brot.rigid_body.global_speed)
+#print(brot.rigid_body.global_inertia)
+#print(brot.global_frame_speed_reference)
+
+#exit(0)
 
 #t.print_reaction_lagrange_multipliers()
 #t.print_local_inertial_objects()

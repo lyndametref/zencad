@@ -154,6 +154,10 @@ class tree_dynamic_solver(dynamic_solver):
 		#	kinframe.integrate_position(delta)
 
 		self.baseunit.location_update(deep=True, view=False)
+		for k in self.kinematic_frames:
+			k.update_global_speed()
+			k.update_global_acceleration()
+			
 		assemble_addons.update_speed_model(self.baseunit)
 		#self.baseunit.frame_speed_update()
 

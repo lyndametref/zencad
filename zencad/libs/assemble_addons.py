@@ -16,6 +16,7 @@ def update_speed_model(baseunit):
 	def func(unit, reference):
 		if isinstance(unit, kinematic_frame):
 			unit.global_frame_speed = unit.global_spdscr
+			print(unit.global_spdscr)
 
 		#print(unit, unit.global_frame_speed, reference)
 		unit.global_frame_speed_reference = reference + unit.global_frame_speed

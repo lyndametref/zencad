@@ -41,7 +41,7 @@ class rigid_body:
 			lin= - mass * aspd.cross(aspd.cross(rho)),
 			ang= - aspd.cross(imat*aspd)
 		)
-		
+
 		#if self.mirror.parent.name == "BROT":
 		#	print(ret)
 		
