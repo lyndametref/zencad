@@ -150,38 +150,24 @@ class tree_dynamic_solver(dynamic_solver):
 			print("{}: {}".format(i.unit, i.global_impulse))
 
 	def onestep(self, delta):
-		#for kinframe in self.kinematic_frames:
-		#	kinframe.integrate_position(delta)
-
 		self.baseunit.location_update(deep=True, view=False)
+		
 		for k in self.kinematic_frames:
 			k.update_global_speed()
 			k.update_global_acceleration()
 			
 		assemble_addons.update_speed_model(self.baseunit)
-		#self.baseunit.frame_speed_update()
 
 		for iner in self.inertial_objects:
 			iner.update_globals()
 
-		#self.calculate_impulses()
-		#self.calculate_kinframe_frame_speeds_accelerations()
-
 		self.reaction_solver.update_globals()
-		#print(self.reaction_solver.inertia_forces())
-
-		#print(self.reaction_solver.inertia_forces())
-
-		#for s in self.kinematic_frames:
-		#	print(s.global_spdscr)
-
-		#print(self.reaction_solver.constrait_matrix())
+		
 		reactions = self.reaction_solver.solve()
 
 		self.reaction_solver.apply_reactions_for_constraits(reactions)
 		self.reduce_kinframe_forces()
-		#print(""self.kinematic_frames[0].force_reduction)
-		#print(self.kinematic_frames[1].force_reduction)
+		
 		self.set_kynframe_accelerations_by_reduced_forces()
 
 		for kinframe in self.kinematic_frames:
@@ -199,41 +185,72 @@ class tree_dynamic_solver(dynamic_solver):
 			
 
 	def set_kynframe_accelerations_by_reduced_forces(self):
-		#print("set_kynframe_accelerations_by_reduced_forces")
 		for kinframe in self.kinematic_frames:
+			#if kinframe.parent:
+			reference = kinframe.global_frame_acceleration_reference
+			spdref = kinframe.global_frame_speed_reference
+			radius = (kinframe.global_pose.inverse() * kinframe.output.global_pose).translation()
+			arm = kinframe.global_pose(radius)
+			#else:
+			#	reference = screw()
+			#	spdref = screw()
+			#	arm = pyservoce.vector3()
+
+			addacc = zencad.libs.screw.second_kinematic_carry(reference, spdref, arm)
 			masskoeff = kinframe.rigid_body.global_inertia.koefficient_for_with_guigens(kinframe.global_sensivity())
-			#print(kinframe.rigid_body.global_inertia.radius)
 			rforce = kinframe.force_reduction.dot(kinframe.global_sensivity())
-			accel = rforce / masskoeff
-			#if kinframe.name == "AROT":
-			#	print(kinframe.force_reduction)
-			kinframe.set_acceleration(accel)
+			accel = rforce / masskoeff - addacc.dot(kinframe.global_sensivity())
+			#kinframe.set_acceleration(accel)
+
+			#print(kinframe.name, kinframe.force_reduction)
+			#print(masskoeff)
+			#print(accel)
+
+		#def func(unit, lastkinframe=None):
+		#	if isinstance(unit, kinematic_frame):
+		#		if lastkinframe:
+		#			reference = lastkinframe.global_frame_acceleration_reference
+		#			spdref = lastkinframe.global_frame_speed_reference
+		#			radius = (lastkinframe.global_pose.inverse() * unit.global_pose).translation()
+		#			arm = lastkinframe.global_pose(radius)
+		#		else:
+		#			reference = screw()
+		#			spdref = screw()
+		#			arm = pyservoce.vector3()
+#
+#
+		#		addacc = zencad.libs.screw.second_kinematic_carry(reference, spdref, arm)
+		#		masskoeff = unit.rigid_body.global_inertia.koefficient_for_with_guigens(unit.global_sensivity())
+		#		rforce = unit.force_reduction.dot(unit.global_sensivity())
+		#		accel = rforce / masskoeff #+ addacc.dot(unit.global_sensivity())
+#
+		#		print(addacc)
+#
+		#		unit.set_acceleration(accel)
+#
+		#		lastkinframe = unit
+		#
+		#	for u in unit.childs:
+		#		func(u, lastkinframe)
+#
+		#func(self.baseunit)
 
 
 	def reduce_kinframe_forces(self):
+		#print("reduce_kinframe_forces")
 		for kinframe in self.kinematic_frames:
 			accum = screw()
-			accum += kinframe.rigid_body.inertia_force()
+			accum += kinframe.rigid_body.inertia_force_in_body_frame()
 
 			for c in kinframe.rigid_body.constrait_connections:
 				reactions = c.get_reaction_force_global()
 
-				#if kinframe.name == "BROT":				
-				#	print(reactions)
-
+				#print(reactions)
 				for r in reactions:
 					accum += r
 
-			#if kinframe.name == "BROT":
-			#	print(accum)
-
 			kinframe.force_reduction = accum
 			#print(accum)
-
-			#for c in kinframe.rigid_body.constrait_connections:
-			#	reactions = c.get_reaction_force_global()
-			#	for i,r in enumerate(reactions):
-			#		print(kinframe, i,  reactions[i])
 
 	def calculate_kinframe_frame_speeds_accelerations(self):
 		for kinframe in self.kinematic_frames:
@@ -268,14 +285,12 @@ class tree_dynamic_solver(dynamic_solver):
 				kinframe.inertia_koefficient += inertia.koefficient_for(kinframe.global_sensivity())
 
 	def calculate_kinframe_forces(self):
-		#print("CALCULATE_KINFRAME_FORCES")
 		for kinframe in self.kinematic_frames:
 			accum = screw()
 
 			for fs in kinframe.post_force_sources:
 				arm = (kinframe.global_pose.translation() - fs.point())
 				f = fs.global_force().force_carry(arm)
-				#print(kinframe.name, fs.unit.name, fs.__class__, f)
 				accum += f
 
 			a = accum.copy()

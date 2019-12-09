@@ -35,7 +35,6 @@ class rotator_constrait(constrait):
 
 	def constrait_screws(self):
 		ang = self.axis
-		
 		#print(ang)
 
 		#self.__dbg += 1
@@ -50,13 +49,17 @@ class rotator_constrait(constrait):
 		f = ang.cross(r).normalize()
 		s = ang.cross(f)
 
-		return [
+		scrs = [
 			screw(lin=(1,0,0), ang=(0,0,0)),
 			screw(lin=(0,1,0), ang=(0,0,0)),
 			screw(lin=(0,0,1), ang=(0,0,0)),
 			screw(lin=(0,0,0), ang=f),
 			screw(lin=(0,0,0), ang=s),
 		]
+
+		#print(scrs)
+
+		return scrs
 
 class constrait_connection:
 	def __init__(self, constrait, body, radius):
@@ -69,15 +72,21 @@ class constrait_connection:
 
 	def get_reaction_force_global(self):
 		reactions = self.constrait.reactions
+		sreactions = [ (self.body_carried_constrait_screws()[i] * reactions[i][0]) for i in range(self.rank()) ]
+
+		return sreactions
+
+	def body_carried_constrait_screws(self):
+		scrs = self.constrait_screws()
 		arm = self.body.global_pose(self.radius)
+		#print(self.body.global_pose)
+		#print("arm", arm)
 
-		#print(self.body.mirror.parent.name, reactions)
 
-		sreactions = [ 
-			(self.constrait.constrait_screws()[i] * reactions[i][0])
-		for i in range(self.rank()) ]
+		tscrs = [ s.force_carry(-arm) for s in scrs ]
+		#print(tscrs)
 
-		return [ r.force_carry(-arm) for r in sreactions ]
+		return tscrs
 
 	def update_globals(self):
 		pass
@@ -115,8 +124,8 @@ def make_constraits_from_kinframe(kinframe):
 
 	if kinframe.base_kinframe:
 		pre = kinframe.base_kinframe.rigid_body
-		radius =-(kinframe.global_pose * pre.global_pose.inverse()).translation()
-		#print(radius)
+		radius =(pre.global_pose.inverse() * kinframe.global_pose).translation()
+		#print(kinframe.name, radius)
 		#exit()
 		c.attach_negative_connection(
 			body=pre, 

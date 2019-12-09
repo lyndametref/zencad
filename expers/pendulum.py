@@ -11,6 +11,8 @@ import zencad.libs.kinematic as kinematic
 
 import numpy
 
+numpy.set_printoptions(precision=5, linewidth=200)
+numpy.set_printoptions(suppress=True)
 #numpy.set_printoptions(precision=1, linewidth=160)
 
 L = 100
@@ -60,7 +62,10 @@ def evaluate():
 
 		t.onestep(delta=delta)
 
-		print(t.reaction_solver.inertia_forces())
+		print(t.reaction_solver.mass_matrix())
+		print(t.reaction_solver.reactions)
+
+		#print(t.reaction_solver.inertia_forces())
 		time.sleep(0.01)
 
 def animate(self):

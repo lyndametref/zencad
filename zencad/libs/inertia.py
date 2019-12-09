@@ -38,6 +38,7 @@ class inertia:
 		m = self.mass
 		I = self.matrix
 		p = self.radius
+		print(self.radius)
 		return numpy.array([
 			[     m,      0,      0,      0,  m*p.z, -m*p.y],
 			[     0,      m,      0, -m*p.z,      0,  m*p.x],
@@ -46,6 +47,15 @@ class inertia:
 			[ m*p.z,      0, -m*p.x, I[1,0], I[1,1], I[1,2]],
 			[-m*p.y,  m*p.x,      0, I[2,0], I[2,1], I[2,2]]
 		])
+
+		#return numpy.array([
+		#	[     m,      0,      0,      0,  0, -0],
+		#	[     0,      m,      0, -0,      0,  0],
+		#	[     0,      0,      m,  0, -0,      0],
+		#	[     0, -0,  0, I[0,0], I[0,1], I[0,2]],
+		#	[ 0,      0, -0, I[1,0], I[1,1], I[1,2]],
+		#	[-0,  0,      0, I[2,0], I[2,1], I[2,2]]
+		#])
 
 	def koefficient_for(self, sens):
 		return (sens.lin * self.mass).length() +  (self.matrix * sens.ang).length() 

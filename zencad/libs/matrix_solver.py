@@ -72,11 +72,8 @@ class reaction_solver:
 
 		for idx, rbody in enumerate(self.rigid_bodies):
 			for connection in rbody.constrait_connections:
-				links = connection.constrait_screws()
+				links = connection.body_carried_constrait_screws()
 				conidx = connection.constrait.constrait_idx
-
-				#print(links)
-				#exit(0)
 
 				for i in range(connection.rank()):
 					scr = links[i]
@@ -117,29 +114,27 @@ class reaction_solver:
 		return K
 
 	def solve(self):
-#		NR = len(self.rigid_bodies)
-#		NF = 0
-#		N = len(self.rigid_bodies) * 6
-#		NC = len(self.constraits)
-
 		M = self.mass_matrix()
 		S = self.active_forces()
 		K = self.inertia_forces()
 		G, h = self.constrait_matrix()
-
 		
+		#print(numpy.matmul(numpy.matmul(G.transpose(), M), G))
+		#L = numpy.linalg.inv(numpy.matmul(numpy.matmul(G.transpose(), M), G))
+
 		Minv = numpy.linalg.inv(M)
 		A = numpy.matmul(G, numpy.matmul(Minv, G.transpose()))
 		b = - numpy.matmul(G, numpy.matmul(Minv, (S + K))) - h
 
-		return numpy.matmul(numpy.linalg.inv(A), b)
+		self.reactions = numpy.linalg.solve(A,b)
+		self.accelerations = numpy.matmul(Minv, (S + K)) + numpy.matmul(Minv, numpy.matmul(G.transpose(), self.reactions))
+
+		return self.reactions
 
 	def apply_reactions_for_constraits(self, reactions):
 		for c in self.constraits:
 			strt = c.constrait_idx
 			rank = c.rank()
-
-			print(reactions)
 
 			c.reactions = [ reactions[i+strt] for i in range(rank) ]
 

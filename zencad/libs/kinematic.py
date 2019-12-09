@@ -40,10 +40,10 @@ class kinematic_frame(zencad.assemble.unit):
 		raise NotImplementedError
 
 	def update_global_speed(self):
-		print("spdscr", self.spdscr)
-		print("pose", self.global_pose)
+		#print("spdscr", self.spdscr)
+		#print("pose", self.global_pose)
 		self.global_spdscr = self.spdscr.rotate_by(self.global_pose)
-		print("globspd", self.global_spdscr)
+		#print("globspd", self.global_spdscr)
 
 	def update_global_acceleration(self):
 		self.global_accscr = self.accscr.rotate_by(self.global_pose)

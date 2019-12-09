@@ -47,6 +47,10 @@ class rigid_body:
 		
 		return ret
 
+	def inertia_force_in_body_frame(self):
+		arm = -self.global_inertia.radius
+		return self.inertia_force().force_carry(arm)
+
 def kinframe_inertial_objects(kinframe):
 	inertial_objects = []
 	def doit(unit):
@@ -86,7 +90,8 @@ def kinframe_force_sources(kinframe):
 def inertia_of_objects(kinframe, iobjects):
 	arr = []
 	for iner in iobjects:
-		mov = -(kinframe.global_pose * iner.unit.global_pose.inverse()).translation()
+		mov = (kinframe.output.global_pose.inverse() * iner.unit.global_pose).translation()
+		mov = kinframe.output.global_pose(mov)
 
 		#print(kinframe.global_pose.inverse() * iner.unit.global_pose)
 		#print(kinframe.global_pose * iner.unit.global_pose.inverse())
@@ -100,7 +105,7 @@ def inertia_of_objects(kinframe, iobjects):
 		#exit(0)
 
 	result = zencad.libs.inertia.complex_inertia(arr)
-	result = result.rotate(kinframe.global_pose.inverse())
+	result = result.rotate(kinframe.output.global_pose.inverse())
 
 	#print(result)
 	#exit(0)
