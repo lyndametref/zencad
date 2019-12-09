@@ -27,6 +27,7 @@ class rigid_body:
 			self.global_speed = self.mirror.global_frame_speed_reference
 
 		self.global_inertia = self.inertia.rotate(self.global_pose)	
+		#print(self.global_inertia.radius)
 		self.global_mass_matrix = self.global_inertia.to_mass_matrix()	
 		#print(self.global_pose)
 
@@ -36,15 +37,15 @@ class rigid_body:
 		rho = self.global_inertia.radius
 		imat = self.global_inertia.matrix
 
-		#print(aspd)
-		#print(mass)
-		#print(rho)
-		#print(imat)
-
-		return screw(
+		ret = screw(
 			lin= - mass * aspd.cross(aspd.cross(rho)),
 			ang= - aspd.cross(imat*aspd)
 		)
+		
+		#if self.mirror.parent.name == "BROT":
+		#	print(ret)
+		
+		return ret
 
 def kinframe_inertial_objects(kinframe):
 	inertial_objects = []

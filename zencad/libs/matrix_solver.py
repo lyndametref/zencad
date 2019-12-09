@@ -139,5 +139,7 @@ class reaction_solver:
 			strt = c.constrait_idx
 			rank = c.rank()
 
+			print(reactions)
+
 			c.reactions = [ reactions[i+strt] for i in range(rank) ]
 

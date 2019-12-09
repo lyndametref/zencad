@@ -71,6 +71,8 @@ class constrait_connection:
 		reactions = self.constrait.reactions
 		arm = self.body.global_pose(self.radius)
 
+		#print(self.body.mirror.parent.name, reactions)
+
 		sreactions = [ 
 			(self.constrait.constrait_screws()[i] * reactions[i][0])
 		for i in range(self.rank()) ]

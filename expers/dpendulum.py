@@ -11,7 +11,7 @@ import zencad.libs.kinematic as kinematic
 
 import numpy
 
-numpy.set_printoptions(precision=1, linewidth=160)
+numpy.set_printoptions(precision=2, linewidth=160)
 
 L = 100
 arot = kinematic.rotator(name="AROT",ax=(1,0,0))
@@ -44,7 +44,7 @@ brot.dempher_koeff = 0
 
 #treedy.attach_inertia(a, mass=1, Ix=0, Iy=0, Iz=0, pose=up(L/2))
 #treedy.attach_inertia(b, mass=1, Ix=0, Iy=0, Iz=0, pose=up(L/2))
-inertia.attach_inertia(ma, mass=1, Ix=1, Iy=1, Iz=1)
+inertia.attach_inertia(ma, mass=0.00001, Ix=0.00001, Iy=0.00001, Iz=0.00001)
 inertia.attach_inertia(mb, mass=1, Ix=1, Iy=1, Iz=1)
 
 #forces.gravity(unit=a,vec=(0,0,-9081))
@@ -58,10 +58,15 @@ inertia.attach_inertia(mb, mass=1, Ix=1, Iy=1, Iz=1)
 base.relocate(rotateZ(deg(90)))
 arot.set_coord(deg(90))
 
-brot.set_speed(0.2)
+brot.set_speed(2)
 t = treedy.tree_dynamic_solver(base)
 
-
+#t.onestep(0.0001)
+numpy.set_printoptions(suppress=True)
+print(t.reaction_solver.inertia_forces())
+print(t.reaction_solver.constrait_matrix()[0])
+print(t.reaction_solver.mass_matrix())
+exit(0)
 
 #t.print_reaction_lagrange_multipliers()
 #t.print_local_inertial_objects()

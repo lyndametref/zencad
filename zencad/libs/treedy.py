@@ -195,18 +195,14 @@ class tree_dynamic_solver(dynamic_solver):
 			
 
 	def set_kynframe_accelerations_by_reduced_forces(self):
-		print("set_kynframe_accelerations_by_reduced_forces")
+		#print("set_kynframe_accelerations_by_reduced_forces")
 		for kinframe in self.kinematic_frames:
 			masskoeff = kinframe.rigid_body.global_inertia.koefficient_for_with_guigens(kinframe.global_sensivity())
+			#print(kinframe.rigid_body.global_inertia.radius)
 			rforce = kinframe.force_reduction.dot(kinframe.global_sensivity())
 			accel = rforce / masskoeff
-			#print(kinframe.global_sensivity())
-			#print(kinframe.rigid_body.global_inertia)
-			#print(kinframe.global_inertia)
-			#print(kinframe.force_reduction)
-			print(kinframe.rigid_body.global_inertia)
-			#print(accel)
-			#print(kinframe.rigid_body.global_inertia)
+			#if kinframe.name == "AROT":
+			#	print(kinframe.force_reduction)
 			kinframe.set_acceleration(accel)
 
 
@@ -218,8 +214,14 @@ class tree_dynamic_solver(dynamic_solver):
 			for c in kinframe.rigid_body.constrait_connections:
 				reactions = c.get_reaction_force_global()
 
+				#if kinframe.name == "BROT":				
+				#	print(reactions)
+
 				for r in reactions:
 					accum += r
+
+			#if kinframe.name == "BROT":
+			#	print(accum)
 
 			kinframe.force_reduction = accum
 			#print(accum)

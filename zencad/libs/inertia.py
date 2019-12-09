@@ -52,6 +52,8 @@ class inertia:
 
 	def koefficient_for_with_guigens(self, sens):
 		iner = self.guigens_transform(-self.radius)
+		#print(self.radius)
+		#print(iner)
 		return (sens.lin * iner.mass).length() +  (iner.matrix * sens.ang).length() 
 
 	def guigens_transform(self, mov):
