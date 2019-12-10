@@ -7,6 +7,9 @@ class matrix_solver:
 		self.rigid_bodies = rigid_bodies
 		self.constraits = constraits
 
+		self.numerate_rigid_bodies()
+		self.numerate_constraits()
+
 	def update_views(self):
 		for s in self.rigid_bodies:
 			s.update_views()
@@ -60,20 +63,21 @@ class matrix_solver:
 		G = numpy.zeros((NC, N), dtype=numpy.float64)
 		h = numpy.zeros((NC, 1), dtype=numpy.float64)
 
-		#for idx, rbody in enumerate(self.rigid_bodies):
-		#	for connection in rbody.constrait_connections:
-		#		links = connection.body_carried_constrait_screws()
-		#		conidx = connection.constrait.constrait_idx
-#
-		#		for i in range(connection.rank()):
-		#			scr = links[i]
-#
-		#			G[conidx + i, idx*6+0] = scr.lin.x  
-		#			G[conidx + i, idx*6+1] = scr.lin.y
-		#			G[conidx + i, idx*6+2] = scr.lin.z
-		#			G[conidx + i, idx*6+3] = scr.ang.x
-		#			G[conidx + i, idx*6+4] = scr.ang.y
-		#			G[conidx + i, idx*6+5] = scr.ang.z
+		for constrait in self.constraits:
+			for connection in constrait.connections:
+				links = connection.body_carried_constrait_screws()
+				conidx = constrait.constrait_idx
+				idx = connection.body.dynno
+
+				for i in range(connection.rank()):
+					scr = links[i]
+
+					G[conidx + i, idx*6+0] = scr.lin.x  
+					G[conidx + i, idx*6+1] = scr.lin.y
+					G[conidx + i, idx*6+2] = scr.lin.z
+					G[conidx + i, idx*6+3] = scr.ang.x
+					G[conidx + i, idx*6+4] = scr.ang.y
+					G[conidx + i, idx*6+5] = scr.ang.z
 
 		return G, h
 
@@ -99,7 +103,6 @@ class matrix_solver:
 			K[idx*6+3,0] = scr.ang.x
 			K[idx*6+4,0] = scr.ang.y
 			K[idx*6+5,0] = scr.ang.z
-
 
 		return K
 

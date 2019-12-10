@@ -67,7 +67,7 @@ class constrait_connection:
 
 	def body_carried_constrait_screws(self):
 		scrs = self.constrait_screws()
-		arm = self.body.global_pose(self.radius)
+		arm = self.body.pose(self.radius)
 
 		tscrs = [ s.force_carry(-arm) for s in scrs ]
 
