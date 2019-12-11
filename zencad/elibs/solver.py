@@ -3,9 +3,10 @@ from zencad.libs.constraits import constrait, constrait_connection
 import numpy
 
 class matrix_solver:
-	def __init__(self, rigid_bodies, constraits):
+	def __init__(self, rigid_bodies, constraits, workspace_scale):
 		self.rigid_bodies = rigid_bodies
 		self.constraits = constraits
+		self.workspace_scale = workspace_scale
 
 		self.numerate_rigid_bodies()
 		self.numerate_constraits()
@@ -34,7 +35,12 @@ class matrix_solver:
 			l = rbody.reference_mass_matrix
 			for i in range(6):
 				for j in range(6):
-					M[idx*6+i, idx*6+j] = l[i,j]
+					if (i>=3 and j<3) or (i<3 and j>=3):
+						# Умножаем элементы матрицы масс, зависимые от радиуса на масштабный коэффициент.
+						M[idx*6+i, idx*6+j] = l[i,j] * self.workspace_scale
+					else:
+						M[idx*6+i, idx*6+j] = l[i,j]
+
 
 		return M
 
