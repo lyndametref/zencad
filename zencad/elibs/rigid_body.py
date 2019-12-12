@@ -39,7 +39,7 @@ class rigid_body(body):
 			lin= - mass * aspd.cross(aspd.cross(rho)),
 			ang= - aspd.cross(imat*aspd)
 		)
-		
+
 		return ret
 
 	def inertia_force_in_body_frame(self):

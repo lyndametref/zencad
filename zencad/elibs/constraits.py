@@ -59,15 +59,15 @@ class constrait_connection:
 		self.body = body
 		self.radius = radius
 
-	def get_reaction_force_global(self):
-		reactions = self.constrait.reactions
-		sreactions = [ (self.body_carried_constrait_screws()[i] * reactions[i][0]) for i in range(self.rank()) ]
-
-		return sreactions
+	#def get_reaction_force_global(self):
+	#	reactions = self.constrait.reactions
+	#	sreactions = [ (self.body_carried_constrait_screws()[i] * reactions[i][0]) for i in range(self.rank()) ]
+#
+	#	return sreactions
 
 	def body_carried_constrait_screws(self):
 		scrs = self.constrait_screws()
-		arm = self.body.pose(self.radius)
+		arm = self.body.pose(self.radius) #- self.body.reference_inertia.radius
 
 		tscrs = [ s.force_carry(-arm) for s in scrs ]
 

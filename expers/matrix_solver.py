@@ -3,6 +3,7 @@
 import numpy
 import pyservoce
 import zencad
+import time
 from zencad import *
 
 import zencad.elibs.solver
@@ -55,4 +56,31 @@ print(accs)
 print("react")
 print(react)
 
-zencad.show()
+#exit(0)
+starttime = time.time()
+lasttime = starttime
+noinited = True
+def animate(wdg):
+	global noinited
+	global lasttime
+
+	if noinited:
+		time.sleep(1)
+		noinited= False
+
+	maxdelta = 0.00001
+	curtime = time.time()
+	delta = curtime - lasttime
+	lasttime = curtime
+
+	if delta > maxdelta:
+		delta = maxdelta
+	DELTA = delta
+
+	print(solver.constrait_matrix()[0])
+	#print(solver.inertia_forces())
+
+	solver.solve()
+	solver.apply(DELTA)
+
+show(animate=animate, animate_step = 0.00001)

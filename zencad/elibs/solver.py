@@ -1,9 +1,10 @@
 from zencad.libs.rigid_body import rigid_body
 from zencad.libs.constraits import constrait, constrait_connection
+from zencad.libs.screw import screw
 import numpy
 
 class matrix_solver:
-	def __init__(self, rigid_bodies, constraits, workspace_scale):
+	def __init__(self, rigid_bodies, constraits, workspace_scale=1):
 		self.rigid_bodies = rigid_bodies
 		self.constraits = constraits
 		self.workspace_scale = workspace_scale
@@ -85,6 +86,10 @@ class matrix_solver:
 					G[conidx + i, idx*6+4] = scr.ang.y
 					G[conidx + i, idx*6+5] = scr.ang.z
 
+#		for constrait in self.constraits:
+#			links = constrait.constrait_screws()
+#			conidx = constrait.constrait_idx
+
 		return G, h
 
 	def active_forces(self):
@@ -101,7 +106,7 @@ class matrix_solver:
 
 		K = numpy.zeros((N, 1))
 		for idx, rbody in enumerate(self.rigid_bodies):
-			scr = rbody.inertia_force()
+			scr = rbody.inertia_force_in_body_frame()
 
 			K[idx*6+0,0] = scr.lin.x  
 			K[idx*6+1,0] = scr.lin.y
@@ -131,6 +136,30 @@ class matrix_solver:
 		self.accelerations = numpy.matmul(Minv, (S + K)) + numpy.matmul(Minv, numpy.matmul(G.transpose(), self.reactions))
 
 		return self.accelerations, self.reactions
+
+	def apply_acceleration_to_rigid_bodies(self):
+		for r in self.rigid_bodies:
+			r.acceleration = screw(
+				lin = ( 
+					self.accelerations[r.dynno*6+0],
+					self.accelerations[r.dynno*6+1],
+					self.accelerations[r.dynno*6+2]),
+				ang = (
+					self.accelerations[r.dynno*6+3],
+					self.accelerations[r.dynno*6+4],
+					self.accelerations[r.dynno*6+5])
+			)
+
+	def rbodies_integrate(self, delta):
+		for r in self.rigid_bodies:
+			diff = (r.speed * delta).to_trans()
+			r.pose = r.pose * diff
+			r.speed = r.speed + r.acceleration * delta 
+
+	def apply(self, delta):
+		self.apply_acceleration_to_rigid_bodies()
+		self.rbodies_integrate(delta)
+		self.update_views()
 
 	def apply_reactions_for_constraits(self, reactions):
 		for c in self.constraits:
