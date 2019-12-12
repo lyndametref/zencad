@@ -106,7 +106,8 @@ class matrix_solver:
 
 		K = numpy.zeros((N, 1))
 		for idx, rbody in enumerate(self.rigid_bodies):
-			scr = rbody.inertia_force_in_body_frame()
+			#scr = rbody.inertia_force_in_body_frame()
+			scr = rbody.inertia_force()
 
 			K[idx*6+0,0] = scr.lin.x  
 			K[idx*6+1,0] = scr.lin.y
@@ -152,8 +153,10 @@ class matrix_solver:
 
 	def rbodies_integrate(self, delta):
 		for r in self.rigid_bodies:
-			diff = (r.speed * delta).to_trans()
+			#diff = (r.speed * delta).to_trans()
+			diff = (r.speed * delta).inverse_rotate_by(r.pose).to_trans()
 			r.pose = r.pose * diff
+			r.pose = r.pose
 			r.speed = r.speed + r.acceleration * delta 
 
 	def apply(self, delta):
