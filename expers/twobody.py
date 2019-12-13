@@ -13,7 +13,7 @@ from zencad.elibs.rigid_body import rigid_body
 from zencad.libs.inertia import inertia
 from zencad.libs.screw import screw
 numpy.set_printoptions(suppress=True)
-numpy.set_printoptions(precision=5, linewidth=160)
+numpy.set_printoptions(precision=3, linewidth=160)
 
 L=20
 
@@ -27,15 +27,18 @@ b = rigid_body(inertia=inertia(radius = pyservoce.vector3(10,0,0)), pose=zencad.
 a.add_view(abody)
 b.add_view(bbody)
 
-b.pose=zencad.transform.right(20) #* zencad.transform.rotateY(deg(20))
-a.set_speed(screw(lin=(0,0,0), ang=(0,2,0)))
-b.set_speed(screw(lin=(0,0,-2*20), ang=(0,2,0)))
+#b.pose=zencad.transform.right(20) #* zencad.transform.rotateY(deg(20))
+a.set_speed(screw(lin=(0,0,0), ang=(0,0,2)))
+b.set_speed(screw(lin=(0,2*20,0), ang=(0,0,2)))
 
-c = constraits.rotator_constrait(ax=(0,1,0))
+c = constraits.spherical_rotator()
 c.attach_positive_connection(body=b, radius=pyservoce.vector3(0,0,0))
 c.attach_negative_connection(body=a, radius=pyservoce.vector3(20,0,0))
 
-solver = zencad.elibs.solver.matrix_solver(rigid_bodies=[a,b], constraits=[c])
+c1 = constraits.spherical_rotator()
+c1.attach_positive_connection(body=a, radius=pyservoce.vector3(0,0,0))
+
+solver = zencad.elibs.solver.matrix_solver(rigid_bodies=[a,b], constraits=[c,c1])
 solver.update_views()
 solver.update_globals()
 
@@ -65,7 +68,7 @@ def animate(wdg):
 		time.sleep(1)
 		noinited= False
 
-	maxdelta = 0.001
+	maxdelta = 0.01
 	curtime = time.time()
 	delta = curtime - lasttime
 	lasttime = curtime
@@ -73,9 +76,6 @@ def animate(wdg):
 	if delta > maxdelta:
 		delta = maxdelta
 	DELTA = delta
-
-	#print(solver.constrait_matrix()[0])
-	print(solver.inertia_forces())
 
 	solver.solve()
 	solver.apply(DELTA)

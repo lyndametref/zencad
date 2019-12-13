@@ -72,23 +72,23 @@ class matrix_solver:
 
 		for constrait in self.constraits:
 			for connection in constrait.connections:
-				links = connection.body_carried_constrait_screws()
+				#links = connection.body_carried_constrait_screws()
 				conidx = constrait.constrait_idx
 				idx = connection.body.dynno
+				m = connection.constrait_matrix()
 
 				for i in range(connection.rank()):
-					scr = links[i]
+					for j in range(6):
+						G[conidx+i, idx*6+j] = m[i, j]
+				
+		for constrait in self.constraits:
+			#links = constrait.constrait_screws()
+			conidx = constrait.constrait_idx
 
-					G[conidx + i, idx*6+0] = scr.lin.x  
-					G[conidx + i, idx*6+1] = scr.lin.y
-					G[conidx + i, idx*6+2] = scr.lin.z
-					G[conidx + i, idx*6+3] = scr.ang.x
-					G[conidx + i, idx*6+4] = scr.ang.y
-					G[conidx + i, idx*6+5] = scr.ang.z
+			m = connection.compensate_vector()
 
-#		for constrait in self.constraits:
-#			links = constrait.constrait_screws()
-#			conidx = constrait.constrait_idx
+			for i in range(connection.rank()):
+				h[conidx+i] = m[i]
 
 		return G, h
 
@@ -119,6 +119,9 @@ class matrix_solver:
 		return K
 
 	def solve(self):
+		NR = len(self.rigid_bodies)
+		NC = len(self.constraits)
+
 		self.update_globals()
 
 		M = self.mass_matrix()
@@ -129,12 +132,56 @@ class matrix_solver:
 		#print(numpy.matmul(numpy.matmul(G.transpose(), M), G))
 		#L = numpy.linalg.inv(numpy.matmul(numpy.matmul(G.transpose(), M), G))
 
-		Minv = numpy.linalg.inv(M)
-		A = numpy.matmul(G, numpy.matmul(Minv, G.transpose()))
-		b = - numpy.matmul(G, numpy.matmul(Minv, (S + K))) - h
+		#Minv = numpy.linalg.inv(M)
+		#A = numpy.matmul(G, numpy.matmul(Minv, G.transpose()))
+		#b = - numpy.matmul(G, numpy.matmul(Minv, (S + K))) - h
+#
+		#self.reactions = numpy.linalg.solve(A,b)
+		#self.accelerations = numpy.matmul(Minv, (S + K)) + numpy.matmul(Minv, numpy.matmul(G.transpose(), self.reactions))
+#
+		#return self.accelerations, self.reactions
 
-		self.reactions = numpy.linalg.solve(A,b)
-		self.accelerations = numpy.matmul(Minv, (S + K)) + numpy.matmul(Minv, numpy.matmul(G.transpose(), self.reactions))
+		#Gt = G.transpose()
+		SK = S+K
+
+		A = numpy.zeros((M.shape[0] + G.shape[0], M.shape[1] + G.shape[0]))
+		for k in range(NR):
+			for i in range(6):
+				for j in range(6):
+					A[k*6+i,k*6+j] = M[i,j]
+
+		for i in range(G.shape[0]):
+			for j in range(G.shape[1]):
+				A[NR*6+i,j] = G[i,j]
+				A[j,NR*6+i] = -G[i,j]
+
+		B = numpy.zeros((M.shape[0] + G.shape[0]))
+
+		for i in range(SK.shape[0]):
+			B[i] = SK[i]
+
+		for i in range(h.shape[0]):
+			B[i+SK.shape[0]] = -h[i]
+
+		print(numpy.linalg.inv(A))
+		print(A)
+		print(B)
+		#print(G)
+		#exit()
+
+		res = numpy.matmul(numpy.linalg.inv(A), B)
+		print(res)
+
+		self.accelerations = numpy.zeros((NR*6))
+		self.reactions = numpy.zeros((G.shape[0]))
+
+		for i in range(SK.shape[0]):
+			self.accelerations[i] = res[i]
+
+		for i in range(h.shape[0]):
+			self.reactions[i] = res[i + NR*6]
+
+		#print(self.accelerations)
 
 		return self.accelerations, self.reactions
 
@@ -156,7 +203,6 @@ class matrix_solver:
 			#diff = (r.speed * delta).to_trans()
 			diff = (r.speed * delta).inverse_rotate_by(r.pose).to_trans()
 			r.pose = r.pose * diff
-			r.pose = r.pose
 			r.speed = r.speed + r.acceleration * delta 
 
 	def apply(self, delta):

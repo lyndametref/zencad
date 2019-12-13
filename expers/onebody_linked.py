@@ -23,9 +23,12 @@ abody = zencad.disp(body)
 a = rigid_body(inertia=inertia(radius=pyservoce.vector3(10,0,0)), pose=zencad.transform.nulltrans())
 a.add_view(abody)
 
-a.set_speed(screw(lin=(0,0,0), ang=(2,2,2)))
+c = constraits.spherical_rotator()
+c.attach_positive_connection(body=a, radius=pyservoce.vector3(0,0,0))
 
-solver = zencad.elibs.solver.matrix_solver(rigid_bodies=[a], constraits=[])
+a.set_speed(screw(lin=(0,0,0), ang=(20,2,0)))
+
+solver = zencad.elibs.solver.matrix_solver(rigid_bodies=[a], constraits=[c])
 solver.update_views()
 solver.update_globals()
 
@@ -55,7 +58,7 @@ def animate(wdg):
 		time.sleep(1)
 		noinited= False
 
-	maxdelta = 0.001
+	maxdelta = 0.0001
 	curtime = time.time()
 	delta = curtime - lasttime
 	lasttime = curtime
@@ -65,11 +68,7 @@ def animate(wdg):
 	DELTA = delta
 
 	#print(solver.constrait_matrix()[0])
-	#print(solver.inertia_forces())
-
-
-	#print("M")
-	print(solver.mass_matrix())
+	print(solver.inertia_forces())
 
 	solver.solve()
 	solver.apply(DELTA)
