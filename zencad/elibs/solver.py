@@ -68,7 +68,6 @@ class matrix_solver:
 		NC = self.constraits_count()
 
 		G = numpy.zeros((NC, N), dtype=numpy.float64)
-		h = numpy.zeros((NC, 1), dtype=numpy.float64)
 
 		for constrait in self.constraits:
 			for connection in constrait.connections:
@@ -80,17 +79,22 @@ class matrix_solver:
 				for i in range(connection.rank()):
 					for j in range(6):
 						G[conidx+i, idx*6+j] = m[i, j]
+
+		return G
 				
+	def compensate_vector(self):
+		NC = self.constraits_count()
+		h = numpy.zeros((NC, 1), dtype=numpy.float64)
+
 		for constrait in self.constraits:
-			#links = constrait.constrait_screws()
-			conidx = constrait.constrait_idx
+			for connection in constrait.connections:
+				conidx = constrait.constrait_idx
+				m = connection.compensate_vector()
+				
+				for i in range(constrait.rank()):
+					h[conidx+i][0] += m[i]
 
-			m = connection.compensate_vector()
-
-			for i in range(connection.rank()):
-				h[conidx+i] = m[i]
-
-		return G, h
+		return h
 
 	def active_forces(self):
 		NR = len(self.rigid_bodies)
@@ -127,23 +131,23 @@ class matrix_solver:
 		M = self.mass_matrix()
 		S = self.active_forces()
 		K = self.inertia_forces()
-		G, h = self.constrait_matrix()
-		
+		G = self.constrait_matrix()
+		h = self.compensate_vector()
 
 
 
 
 
-		#Minv = numpy.linalg.inv(M)
-		#A = numpy.matmul(G, numpy.matmul(Minv, G.transpose()))
-		#b = - numpy.matmul(G, numpy.matmul(Minv, (S + K))) - h
-		#
-		#self.reactions = numpy.linalg.solve(A,b)
-		#self.accelerations = numpy.matmul(Minv, (S + K)) + numpy.matmul(Minv, numpy.matmul(G.transpose(), self.reactions))
-#
-		#print(self.accelerations)
-#
-		#return self.accelerations, self.reactions
+#		Minv = numpy.linalg.inv(M)
+#		A = numpy.matmul(G, numpy.matmul(Minv, G.transpose()))
+#		b = - numpy.matmul(G, numpy.matmul(Minv, (S + K))) - h
+#		
+#		self.reactions = numpy.linalg.solve(A,b)
+#		self.accelerations = numpy.matmul(Minv, (S + K)) + numpy.matmul(Minv, numpy.matmul(G.transpose(), self.reactions))
+#		
+#		#print(self.accelerations)
+#		
+#		return self.accelerations, self.reactions
 
 		
 
@@ -204,6 +208,7 @@ class matrix_solver:
 			diff = (r.speed * delta).inverse_rotate_by(r.pose).to_trans()
 			r.pose = r.pose * diff
 			r.speed = r.speed + r.acceleration * delta 
+			print(r.speed)
 
 	def apply(self, delta):
 		self.apply_acceleration_to_rigid_bodies()

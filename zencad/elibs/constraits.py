@@ -148,6 +148,11 @@ class spherical_rotator(constrait):
 		aspd = con.body.speed.ang
 		vec = aspd.cross(aspd.cross(r))
 
+		#print(con)
+		#print(con.body)
+		#print("aspd",aspd)
+		#print("r",r)
+
 		#return numpy.matrix([0,0,0]).transpose()
 
 		return numpy.matrix([
