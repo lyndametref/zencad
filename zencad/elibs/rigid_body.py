@@ -42,6 +42,6 @@ class rigid_body(body):
 
 		return ret
 
-	#def inertia_force_in_body_frame(self):
-	#	arm = -self.reference_inertia.radius
-	#	return self.inertia_force().force_carry(arm)
+	def inertia_force_in_body_frame(self):
+		arm = -self.reference_inertia.radius
+		return self.inertia_force().force_carry(arm)

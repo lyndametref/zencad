@@ -29,16 +29,16 @@ b.add_view(bbody)
 
 #b.pose=zencad.transform.right(20) #* zencad.transform.rotateY(deg(20))
 a.set_speed(screw(lin=(0,0,0), ang=(0,0,2)))
-b.set_speed(screw(lin=(0,2*20,0), ang=(0,0,2)))
+b.set_speed(screw(lin=(0,2*20,0), ang=(0,0,3)))
 
 c = constraits.spherical_rotator()
 c.attach_positive_connection(body=b, radius=pyservoce.vector3(0,0,0))
 c.attach_negative_connection(body=a, radius=pyservoce.vector3(20,0,0))
 
-c1 = constraits.spherical_rotator()
-c1.attach_positive_connection(body=a, radius=pyservoce.vector3(0,0,0))
+#c1 = constraits.spherical_rotator()
+#c1.attach_positive_connection(body=a, radius=pyservoce.vector3(0,0,0))
 
-solver = zencad.elibs.solver.matrix_solver(rigid_bodies=[a,b], constraits=[c,c1])
+solver = zencad.elibs.solver.matrix_solver(rigid_bodies=[a,b], constraits=[c])
 solver.update_views()
 solver.update_globals()
 
@@ -68,7 +68,7 @@ def animate(wdg):
 		time.sleep(1)
 		noinited= False
 
-	maxdelta = 0.01
+	maxdelta = 0.001
 	curtime = time.time()
 	delta = curtime - lasttime
 	lasttime = curtime

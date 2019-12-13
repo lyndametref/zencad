@@ -58,7 +58,7 @@ def animate(wdg):
 		time.sleep(1)
 		noinited= False
 
-	maxdelta = 0.0001
+	maxdelta = 0.001
 	curtime = time.time()
 	delta = curtime - lasttime
 	lasttime = curtime
