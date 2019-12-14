@@ -92,6 +92,9 @@ class screw:
 			rot_dim = self.ang.normalize()
 			trans1 = zencad.rotate(rot_dim, rot_mul)
 			return trans0 * trans1 
+
+	def npvec_lin_first(self):
+		return numpy.array([self.lin.x, self.lin.y, self.lin.z, self.ang.x, self.ang.y, self.ang.z])
 		
 	@staticmethod
 	def from_array(a):

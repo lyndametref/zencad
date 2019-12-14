@@ -29,32 +29,18 @@ b.add_view(bbody)
 
 #b.pose=zencad.transform.right(20) #* zencad.transform.rotateY(deg(20))
 a.set_speed(screw(lin=(0,0,0), ang=(0,0,0)))
-b.set_speed(screw(lin=(0,0,-1*10), ang=(0,1,0)))
+b.set_speed(screw(lin=(0,0,-6*10), ang=(0,6,0)))
 
 c = constraits.spherical_rotator()
-c.attach_positive_connection(body=b, radius=pyservoce.vector3(-10,0,0))
-c.attach_negative_connection(body=a, radius=pyservoce.vector3(10,0,0))
+c.attach_positive_connection(body=b, pose=moveX(-10))
+c.attach_negative_connection(body=a, pose=moveX(10))
 
 c1 = constraits.spherical_rotator()
-c1.attach_positive_connection(body=a, radius=pyservoce.vector3(-10,0,0))
+c1.attach_reference(body=a, pose=moveX(-10))
 
 solver = zencad.elibs.solver.matrix_solver(rigid_bodies=[a,b], constraits=[c,c1])
 solver.update_views()
 solver.update_globals()
-
-print("mass matrix")
-print(solver.mass_matrix())
-print("constrait matrix")
-print(solver.constrait_matrix()[0])
-print("inertia_forces")
-print(solver.inertia_forces())
-
-accs, react = solver.solve()
-
-print("acc")
-print(accs)
-print("react")
-print(react)
 
 #exit(0)
 starttime = time.time()
@@ -79,10 +65,5 @@ def animate(wdg):
 
 	solver.solve()
 	solver.apply(DELTA)
-
-	print(solver.constrait_matrix())
-	print(solver.compensate_vector())
-	#print(a)
-	#print(b)
 
 show(animate=animate, animate_step = 0.00001)

@@ -9,9 +9,6 @@ class matrix_solver:
 		self.constraits = constraits
 		self.workspace_scale = workspace_scale
 
-		self.numerate_rigid_bodies()
-		self.numerate_constraits()
-
 	def update_views(self):
 		for s in self.rigid_bodies:
 			s.update_views()
@@ -25,7 +22,7 @@ class matrix_solver:
 		for i, c in enumerate(self.constraits):
 			c.dynno = i 
 			c.constrait_idx = constrait_idx
-			constrait_idx += c.rank()
+			constrait_idx += c.rank
 
 	def mass_matrix(self):
 		NR = len(self.rigid_bodies)
@@ -46,7 +43,8 @@ class matrix_solver:
 		return M
 
 	def update_constraits_globals(self):
-		pass
+		for s in self.constraits:
+			s.update_globals()
 
 	def update_rbody_globals(self):
 		for s in self.rigid_bodies:
@@ -55,11 +53,13 @@ class matrix_solver:
 	def update_globals(self):
 		self.update_constraits_globals()
 		self.update_rbody_globals()
+		self.numerate_rigid_bodies()
+		self.numerate_constraits()
 
 	def constraits_count(self):
 		accum = 0
 		for c in self.constraits:
-			accum += c.rank()
+			accum += c.rank
 		return accum
 
 	def constrait_matrix(self):
@@ -74,9 +74,9 @@ class matrix_solver:
 				#links = connection.body_carried_constrait_screws()
 				conidx = constrait.constrait_idx
 				idx = connection.body.dynno
-				m = connection.constrait_matrix()
+				m = connection.constrait_matrix
 
-				for i in range(connection.rank()):
+				for i in range(connection.rank):
 					for j in range(6):
 						G[conidx+i, idx*6+j] = m[i, j]
 
@@ -87,12 +87,18 @@ class matrix_solver:
 		h = numpy.zeros((NC, 1), dtype=numpy.float64)
 
 		for constrait in self.constraits:
+			conidx = constrait.constrait_idx
+			c = constrait.closing_compensate_vector
+
 			for connection in constrait.connections:
-				conidx = constrait.constrait_idx
-				m = connection.compensate_vector()
+				m = connection.compensate_vector
 				
-				for i in range(constrait.rank()):
+				for i in range(constrait.rank):
 					h[conidx+i][0] += m[i]
+
+			for i in range(constrait.rank):
+				h[conidx+i][0] += c[i]
+
 
 		return h
 
@@ -123,10 +129,10 @@ class matrix_solver:
 		return K
 
 	def solve(self):
+		self.update_globals()
+
 		NR = len(self.rigid_bodies)
 		NC = len(self.constraits)
-
-		self.update_globals()
 
 		M = self.mass_matrix()
 		S = self.active_forces()
@@ -208,7 +214,6 @@ class matrix_solver:
 			diff = (r.speed * delta).inverse_rotate_by(r.pose).to_trans()
 			r.pose = r.pose * diff
 			r.speed = r.speed + r.acceleration * delta 
-			print(r.speed)
 
 	def apply(self, delta):
 		self.apply_acceleration_to_rigid_bodies()
