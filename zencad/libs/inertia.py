@@ -74,7 +74,7 @@ class inertia:
 				+ self.mass \
 					* ( pyservoce.matrix33(sqr, sqr, sqr) - mov.outerprod(mov)),
 			mass = self.mass,
-			radius = self.radius + mov
+			radius = self.radius# + mov
 		)
 
 	def impulse_to_speed(self, impulse_screw):

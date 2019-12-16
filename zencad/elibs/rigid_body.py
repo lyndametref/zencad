@@ -26,8 +26,10 @@ class rigid_body(body):
 		self.acceleration = scr
 
 	def update_globals(self):
-		self.reference_inertia = self.inertia.rotate(self.pose)	
-		self.reference_mass_matrix = self.reference_inertia.to_mass_matrix()	
+		self.reference_inertia = self.inertia.rotate(self.pose)
+
+		moved_inertia = self.reference_inertia.guigens_transform(-self.reference_inertia.radius)
+		self.reference_mass_matrix = moved_inertia.to_mass_matrix()	
 
 	def inertia_force(self):
 		aspd = self.speed.ang
@@ -42,6 +44,6 @@ class rigid_body(body):
 
 		return ret
 
-	def inertia_force_in_body_frame(self):
-		arm = -self.reference_inertia.radius
-		return self.inertia_force().force_carry(arm)
+	#def inertia_force_in_body_frame(self):
+	#	arm = -self.reference_inertia.radius
+	#	return self.inertia_force().force_carry(arm)

@@ -1,158 +1,79 @@
 #!/usr/bin/env python3
 
-import zencad
-from zencad import *
-import numpy.linalg
-import time
-import zencad.libs.treedy as treedy
-import zencad.libs.forces as forces
-import zencad.libs.inertia as inertia
-from zencad.libs.screw import screw
-import zencad.libs.kinematic as kinematic
-
 import numpy
+import pyservoce
+import zencad
+import time
+from zencad import *
 
-numpy.set_printoptions(precision=5, linewidth=200)
-
-L = 100
-arot = kinematic.rotator(name="AROT",ax=(1,0,0))
-brot = kinematic.rotator(name="BROT",ax=(1,0,0))
-crot = kinematic.rotator(name="CROT",ax=(1,0,0))
-a = zencad.assemble.unit(name="A")
-b = zencad.assemble.unit(name="B")
-c = zencad.assemble.unit(name="C")
-ma = zencad.assemble.unit(name="MA", shape=sphere(10))
-mb = zencad.assemble.unit(name="MB", shape=sphere(10))
-mc = zencad.assemble.unit(name="MC", shape=sphere(10))
-
-a.add_shape(cylinder(r=5, h=L))
-b.add_shape(cylinder(r=5, h=L))
-c.add_shape(cylinder(r=5, h=L))
-
-base = zencad.assemble.unit()
-
-base.link(arot)
-arot.link(a)
-a.link(brot)
-brot.link(b)
-#b.link(crot)
-crot.link(c)
-
-brot.relocate(up(L))
-crot.relocate(up(L))
-
-a.link(ma)
-b.link(mb)
-c.link(mc)
-
-ma.relocate(up(L))
-mb.relocate(up(L))
-mc.relocate(up(L))
-
-arot.dempher_koeff = 0
-brot.dempher_koeff = 0
-
-#treedy.attach_inertia(a, mass=1, Ix=0, Iy=0, Iz=0, pose=up(L/2))
-#treedy.attach_inertia(b, mass=1, Ix=0, Iy=0, Iz=0, pose=up(L/2))
-inertia.attach_inertia(ma, mass=1, Ix=1, Iy=1, Iz=1)
-inertia.attach_inertia(mb, mass=1, Ix=1, Iy=1, Iz=1)
-inertia.attach_inertia(mc, mass=1, Ix=1, Iy=1, Iz=1)
-
-#forces.gravity(unit=a,vec=(0,0,-9081))
-#forces.gravity(unit=b,vec=(0,0,-9081))
-#forces.gravity(unit=ma,vec=(0,0,-9081))
-#forces.gravity(unit=mb,vec=(0,0,-9081))
-
-#dph1 = forces.dempher(unit=arot, koeff=50000)
-#dph2 = forces.dempher(unit=brot, koeff=50000)
-
-base.relocate(rotateZ(deg(0)))
-arot.set_coord(deg(0))
-
-brot.set_speed(2)
-t = treedy.tree_dynamic_solver(base)
-
+import zencad.elibs.solver
+import zencad.elibs.constraits as constraits
+from zencad.elibs.rigid_body import rigid_body
+#import zencad.libs.kinematic as kinematic
+from zencad.libs.inertia import inertia
+from zencad.libs.screw import screw
 numpy.set_printoptions(suppress=True)
-print(arot.rigid_body.global_inertia.to_mass_matrix())
-print(t.reaction_solver.mass_matrix())
+numpy.set_printoptions(precision=3, linewidth=160)
 
-t.onestep(0.0001)
+L=20
 
-print("K")
-print(t.reaction_solver.inertia_forces())
+body = zencad.cylinder(r=5, h=L, center=True).rotateY(deg(90))
+body2 = zencad.cylinder(r=5, h=L, center=True).rotateY(deg(90))
+body3 = zencad.cylinder(r=5, h=L, center=True).rotateY(deg(90))
+abody = zencad.disp(body)
+bbody = zencad.disp(body2)
+bbody3 = zencad.disp(body3)
 
-print("G")
-print(t.reaction_solver.constrait_matrix()[0])
+a = rigid_body(inertia=inertia(radius = pyservoce.vector3(10,0,0)), pose=zencad.moveX(10))
+b = rigid_body(inertia=inertia(radius = pyservoce.vector3(10,0,0)), pose=zencad.moveX(30))
+b3 = rigid_body(inertia=inertia(radius = pyservoce.vector3(10,0,0)), pose=zencad.moveX(50))
+a.add_view(abody)
+b.add_view(bbody)
+b3.add_view(bbody3)
 
-print("M")
-print(t.reaction_solver.mass_matrix())
+#b.pose=zencad.transform.right(20) #* zencad.transform.rotateY(deg(20))
+#a.set_speed(screw(lin=(0,0,0), ang=(0,0,0)))
+#b.set_speed(screw(lin=(0,0,-6*10), ang=(0,6,0)))
 
-"solve"
-print(t.reaction_solver.solve())
+c2 = constraits.spherical_rotator()
+c2.attach_positive_connection(body=b3, pose=moveX(-10))
+c2.attach_negative_connection(body=b, pose=moveX(10))
 
-cancel = False
-DELTA = 0
+c = constraits.spherical_rotator()
+c.attach_positive_connection(body=b, pose=moveX(-10))
+c.attach_negative_connection(body=a, pose=moveX(10))
 
-def evaluate():
-	global DELTA
-	starttime = time.time()
-	lasttime = starttime
+c1 = constraits.spherical_rotator()
+c1.attach_reference(body=a, pose=moveX(-10))
 
-	time.sleep(2)
+solver = zencad.elibs.solver.matrix_solver(rigid_bodies=[a,b,b3], constraits=[c,c1,c2], 
+	world_dempher=0.2, 
+	gravity=(0,0,-100))
+solver.update_views()
+solver.update_globals()
 
-	#cp.enable()
-	while True:
-		if cancel:
-			return
-		maxdelta = 0.001
-		curtime = time.time()
-		delta = curtime - lasttime
-		lasttime = curtime
+#exit(0)
+starttime = time.time()
+lasttime = starttime
+noinited = True
+def animate(wdg):
+	global noinited
+	global lasttime
 
+	if noinited:
+		time.sleep(1)
+		noinited= False
 
-		if delta > maxdelta:
-			delta = maxdelta
-		DELTA = delta
+	maxdelta = 0.01
+	curtime = time.time()
+	delta = curtime - lasttime
+	lasttime = curtime
 
-		try:
-			t.onestep(delta=delta)
-		except:
-			print(arot.rigid_body.global_inertia)
-			print(t.reaction_solver.mass_matrix())
-			exit(0)
-		time.sleep(0.01)
+	if delta > maxdelta:
+		delta = maxdelta
+	DELTA = delta
 
-		#print(t.reaction_solver.mass_matrix())
-		#print(t.reaction_solver.constrait_matrix()[0])
-		#print(t.reaction_solver.reactions)
+	solver.solve()
+	solver.apply(DELTA)
 
-		print(t.reaction_solver.accelerations)
-
-		#print(t.reaction_solver.reactions)
-		
-		#print(t.reaction_solver.constraits[0].connections[0].get_reaction_force_global())
-		#print(t.reaction_solver.constraits[1].connections[0].get_reaction_force_global())
-		#print(t.reaction_solver.constraits[1].connections[1].get_reaction_force_global())
-
-		#print(crot.output.global_frame_speed_reference)
-		#print(crot.output.global_frame_acceleration_reference)
-		#print(crot.rigid_body.global_inertia.radius)
-		#print(crot.rigid_body.global_inertia)
-
-		#print(mb, mb.global_frame_acceleration_reference)
-		#print(ma, ma.global_frame_acceleration_reference)
-
-
-def animate(self):
-	base.location_update(deep=True, view=True)
-
-import threading
-evalthr = threading.Thread(target=evaluate)
-evalthr.start()
-
-def close_handle():
-	global cancel
-	cancel = True
-
-disp(base)
-show(animate=animate, animate_step = 0.00001, close_handle=close_handle)
+show(animate=animate, animate_step = 0.00001)

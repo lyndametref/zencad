@@ -28,8 +28,10 @@ a.add_view(abody)
 b.add_view(bbody)
 
 #b.pose=zencad.transform.right(20) #* zencad.transform.rotateY(deg(20))
+#a.set_speed(screw(lin=(0,0,0), ang=(0,0,0)))
+#b.set_speed(screw(lin=(0,0,-6*10), ang=(0,6,0)))
 a.set_speed(screw(lin=(0,0,0), ang=(0,0,0)))
-b.set_speed(screw(lin=(0,0,-6*10), ang=(0,6,0)))
+b.set_speed(screw(lin=(10,0,0), ang=(0,0,0)))
 
 c = constraits.spherical_rotator()
 c.attach_positive_connection(body=b, pose=moveX(-10))

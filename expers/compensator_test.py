@@ -48,14 +48,16 @@ rl110.add_view(disp(l110))
 rl101.add_view(disp(l101))
 rl111.add_view(disp(l111))
 
-c00 = constraits.spherical_rotator(T_comp=5)
-c01 = constraits.spherical_rotator(T_comp=5)
-c10 = constraits.spherical_rotator(T_comp=5)
-c11 = constraits.spherical_rotator(T_comp=5)
-c100 = constraits.spherical_rotator(T_comp=5)
-c101 = constraits.spherical_rotator(T_comp=5)
-c110 = constraits.spherical_rotator(T_comp=5)
-c111 = constraits.spherical_rotator(T_comp=5)
+T_comp=10
+
+c00 = constraits.spherical_rotator(T_comp=T_comp)
+c01 = constraits.spherical_rotator(T_comp=T_comp)
+c10 = constraits.spherical_rotator(T_comp=T_comp)
+c11 = constraits.spherical_rotator(T_comp=T_comp)
+c100 = constraits.spherical_rotator(T_comp=T_comp)
+c101 = constraits.spherical_rotator(T_comp=T_comp)
+c110 = constraits.spherical_rotator(T_comp=T_comp)
+c111 = constraits.spherical_rotator(T_comp=T_comp)
 
 #c00.attach(rbody, translate(15,0,-15), rl00, translate(0,0,L/2))
 #c01.attach(rbody, translate(-15,0,-15), rl10, translate(0,0,L/2))
@@ -78,7 +80,9 @@ c110.attach(rl110, translate(0,0,L/2), rl111, translate(0,0,-L/2))
 #c111.attach(rl111, translate(0,0,0), rl00, translate(0,0,0))
 
 
-solver = zencad.elibs.solver.matrix_solver(rigid_bodies=[rl00,rl10,rl11,rl01, rl100,rl110,rl111,rl101], constraits=[c00,c01,c10,c11,c100,c101,c110])
+solver = zencad.elibs.solver.matrix_solver(
+	rigid_bodies=[rl00,rl10,rl11,rl01, rl100,rl110,rl111,rl101], 
+	constraits=[c00,c01,c10,c11,c100,c101,c110])
 solver.update_views()
 solver.update_globals()
 
@@ -94,7 +98,7 @@ def animate(wdg):
 		time.sleep(1)
 		noinited= False
 
-	maxdelta = 0.01
+	maxdelta = 10
 	curtime = time.time()
 	delta = curtime - lasttime
 	lasttime = curtime
@@ -106,4 +110,4 @@ def animate(wdg):
 	solver.solve()
 	solver.apply(DELTA)
 
-show(animate=animate, animate_step = 0.00001)
+show(animate=animate, animate_step = 0.00000001)

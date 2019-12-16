@@ -2,12 +2,22 @@ from zencad.libs.rigid_body import rigid_body
 from zencad.libs.constraits import constrait, constrait_connection
 from zencad.libs.screw import screw
 import numpy
+import numpy as np
+import pyservoce
 
 class matrix_solver:
-	def __init__(self, rigid_bodies, constraits, workspace_scale=1):
+	def __init__(self, rigid_bodies, constraits, 
+		workspace_scale=1, 
+		gravity=pyservoce.vector3(0,0,0),
+		world_dempher=0,
+		closing_compensation=True):
+		
 		self.rigid_bodies = rigid_bodies
 		self.constraits = constraits
 		self.workspace_scale = workspace_scale
+		self.gravity = gravity
+		self.world_dempher = world_dempher
+		self.closing_compensation = closing_compensation
 
 	def update_views(self):
 		for s in self.rigid_bodies:
@@ -96,8 +106,9 @@ class matrix_solver:
 				for i in range(constrait.rank):
 					h[conidx+i][0] += m[i]
 
-			for i in range(constrait.rank):
-				h[conidx+i][0] += c[i]
+			if self.closing_compensation:
+				for i in range(constrait.rank):
+					h[conidx+i][0] += c[i]
 
 
 		return h
@@ -108,7 +119,16 @@ class matrix_solver:
 
 		S = numpy.zeros((N, 1))
 
-		return S
+		gravs = []
+		if self.gravity != pyservoce.vector3(0,0,0):
+			for i, r in enumerate(self.rigid_bodies):
+				arm = -r.reference_inertia.radius
+				scr = screw(lin=self.gravity,ang=(0,0,0)).force_carry(arm) * r.reference_inertia.mass
+				gravs.append(scr.npvec_lin_first()) 
+
+		P = np.concatenate(gravs).reshape((N,1))
+
+		return S + P
 
 	def inertia_forces(self):
 		NR = len(self.rigid_bodies)
@@ -144,53 +164,54 @@ class matrix_solver:
 
 
 
-#		Minv = numpy.linalg.inv(M)
-#		A = numpy.matmul(G, numpy.matmul(Minv, G.transpose()))
-#		b = - numpy.matmul(G, numpy.matmul(Minv, (S + K))) - h
+		Minv = numpy.linalg.inv(M)
+		A = numpy.matmul(G, numpy.matmul(Minv, G.transpose()))
+		b = - numpy.matmul(G, numpy.matmul(Minv, (S + K))) - h
+		
+		self.reactions = numpy.linalg.solve(A,b)
+		self.accelerations = numpy.matmul(Minv, (S + K)) + numpy.matmul(Minv, numpy.matmul(G.transpose(), self.reactions))
+		
+		#print(self.accelerations)
+		
+		return self.accelerations, self.reactions
+
+		
+
+
+#		SK = S+K
 #		
-#		self.reactions = numpy.linalg.solve(A,b)
-#		self.accelerations = numpy.matmul(Minv, (S + K)) + numpy.matmul(Minv, numpy.matmul(G.transpose(), self.reactions))
+#		A = numpy.zeros((M.shape[0] + G.shape[0], M.shape[1] + G.shape[0]))
+#		for k in range(NR):
+#			for i in range(6):
+#				for j in range(6):
+#					A[k*6+i,k*6+j] = M[i,j]
 #		
-#		#print(self.accelerations)
+#		for i in range(G.shape[0]):
+#			for j in range(G.shape[1]):
+#				A[NR*6+i,j] = G[i,j]
+#				A[j,NR*6+i] = -G[i,j]
 #		
-#		return self.accelerations, self.reactions
-
-		
-
-
-		SK = S+K
-		
-		A = numpy.zeros((M.shape[0] + G.shape[0], M.shape[1] + G.shape[0]))
-		for k in range(NR):
-			for i in range(6):
-				for j in range(6):
-					A[k*6+i,k*6+j] = M[i,j]
-		
-		for i in range(G.shape[0]):
-			for j in range(G.shape[1]):
-				A[NR*6+i,j] = G[i,j]
-				A[j,NR*6+i] = -G[i,j]
-		
-		B = numpy.zeros((M.shape[0] + G.shape[0]))
-		
-		for i in range(SK.shape[0]):
-			B[i] = SK[i]
-		
-		for i in range(h.shape[0]):
-			B[i+SK.shape[0]] = -h[i]
-		
-		res = numpy.matmul(numpy.linalg.inv(A), B)
-		
-		self.accelerations = numpy.zeros((NR*6))
-		self.reactions = numpy.zeros((G.shape[0]))
-		
-		for i in range(SK.shape[0]):
-			self.accelerations[i] = res[i]
-		
-		for i in range(h.shape[0]):
-			self.reactions[i] = res[i + NR*6]
-
-
+#		B = numpy.zeros((M.shape[0] + G.shape[0]))
+#		
+#		for i in range(SK.shape[0]):
+#			B[i] = SK[i]
+#		
+#		for i in range(h.shape[0]):
+#			B[i+SK.shape[0]] = -h[i]
+#		
+#		res = numpy.matmul(numpy.linalg.inv(A), B)
+#		
+#		self.accelerations = numpy.zeros((NR*6))
+#		self.reactions = numpy.zeros((G.shape[0]))
+#		
+#		for i in range(SK.shape[0]):
+#			self.accelerations[i] = res[i]
+#		
+#		for i in range(h.shape[0]):
+#			self.reactions[i] = res[i + NR*6]
+#
+#		self.A = A
+#		self.B = B
 
 
 		return self.accelerations, self.reactions
@@ -209,11 +230,14 @@ class matrix_solver:
 			)
 
 	def rbodies_integrate(self, delta):
-		for r in self.rigid_bodies:
-			#diff = (r.speed * delta).to_trans()
-			diff = (r.speed * delta).inverse_rotate_by(r.pose).to_trans()
-			r.pose = r.pose * diff
-			r.speed = r.speed + r.acceleration * delta 
+		n = 8
+		delta = delta / n
+
+		for i in range(n):
+			for r in self.rigid_bodies:
+				diff = (r.speed * delta).inverse_rotate_by(r.pose).to_trans()
+				r.pose = r.pose * diff
+				r.speed = r.speed + r.acceleration * delta - r.speed * self.world_dempher * delta
 
 	def apply(self, delta):
 		self.apply_acceleration_to_rigid_bodies()

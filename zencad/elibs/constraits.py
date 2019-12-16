@@ -5,7 +5,7 @@ from zencad.libs.screw import screw
 import zencad.libs.screw
 
 class constrait:
-	def __init__(self, T_comp=0.1, ksi_comp=0.5):
+	def __init__(self, T_comp=0.1, ksi_comp=0.73):
 		self.connections = []
 		self.lin = []
 		self.ang = []
@@ -52,6 +52,7 @@ class constrait:
 				- speed_compensate * self.compensation_koeff_speed 
 				- position_compensate * self.compensation_koeff_position 
 			)
+			#print(self.closing_compensate_vector)
 
 		elif len(self.connections) == 2:
 			carry_arm_0 =  self.connections[0].body.pose(self.connections[0].pose.translation())
@@ -61,16 +62,10 @@ class constrait:
 			speed_error = self.connections[0].body.speed.kinematic_carry(carry_arm_0) - self.connections[1].body.speed.kinematic_carry(carry_arm_1)
 
 			position_error = screw.from_trans(pose_error).rotate_by(self.connections[1].fullpose).npvec_lin_first()			
-			#position_error = screw.from_trans(pose_error).npvec_lin_first()			
 			speed_error = speed_error.npvec_lin_first()
 			
-
-			#speed_compensate = np.matmul(self.constrait_matrix, speed_error)
 			position_compensate = np.matmul(self.constrait_matrix, position_error)
 			speed_compensate = np.matmul(self.constrait_matrix, speed_error)
-
-			#print(speed_compensate)
-			print(position_error)
 
 			self.closing_compensate_vector = ( #numpy.zeros((3))
 				- speed_compensate * self.compensation_koeff_speed 
