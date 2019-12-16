@@ -1,4 +1,4 @@
-from zencad.elibs.body import body
+from zencad.mbody.body import body
 from zencad.libs.screw import screw
 
 class rigid_body(body):

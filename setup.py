@@ -44,7 +44,7 @@ setup(
             "techpriest.jpg",
             "geom/*",
             "libs/*",
-            "elibs/*",
+            "mbody/*",
             "gui/*",
             "examples/*",
             "examples/**/*",

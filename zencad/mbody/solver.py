@@ -1,5 +1,5 @@
-from zencad.libs.rigid_body import rigid_body
-from zencad.libs.constraits import constrait, constrait_connection
+from zencad.mbody.rigid_body import rigid_body
+from zencad.mbody.constraits import constrait, constrait_connection
 from zencad.libs.screw import screw
 import numpy
 import numpy as np

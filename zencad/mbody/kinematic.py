@@ -1,8 +1,6 @@
 import zencad.assemble
-import zencad.libs.physics
-import zencad.libs.screw
 import zencad.libs.inertia
-import zencad.libs.constraits as constraits
+import zencad.mbody.constraits as constraits
 from zencad.libs.screw import screw
 from zencad.libs.inertia import inertia
 import pyservoce
@@ -192,10 +190,11 @@ class kinematic_unit_one_axis(kinematic_unit):
 class rotator(kinematic_unit_one_axis):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.constrait = constraits.rotator_constrait(self.ax)
+		#self.constrait = constraits.rotator(self.ax)
 
 	def update_globals(self):
-		self.constrait.axis = self.global_sensivity().ang
+		pass
+		#self.constrait.axis = self.global_sensivity().ang
 
 	def sensivity(self):
 		"""Возвращает тензор производной по положению

@@ -23,12 +23,14 @@ class unit:
 
 	def __init__(self, 
 				parent=None,
-				location=pyservoce.libservoce.nulltrans(),
+				location=None, # deprecated
+				pose=pyservoce.libservoce.nulltrans(), 
 				shape=None,
 				name=None):    
 		self.parent = parent
 		self.shape = shape
-		self.location = evalcache.unlazy_if_need(location)
+		self.location = evalcache.unlazy_if_need(location) # deprecated
+		self.location = evalcache.unlazy_if_need(pose)
 		self.global_pose = self.location
 		self.name = name
 		self.color = None
@@ -48,7 +50,7 @@ class unit:
 	def link(self, child):
 		self.add_child(child)
 
-	def location_update(self, deep=True, view=True):
+	def update_pose(self, deep=True, view=True):
 		if self.parent is None:
 			self.global_pose = self.location
 
@@ -63,6 +65,9 @@ class unit:
 			self._apply_view_location(False)
 
 		self.update_globals()
+
+	def location_update(self, deep=True, view=True):
+		self.update_pose(deep=True, view=True)
 
 	def update_globals(self):
 		pass

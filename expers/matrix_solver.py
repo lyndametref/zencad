@@ -6,9 +6,9 @@ import zencad
 import time
 from zencad import *
 
-import zencad.elibs.solver
-import zencad.elibs.constraits as constraits
-from zencad.elibs.rigid_body import rigid_body
+import zencad.mbody.solver
+import zencad.mbody.constraits as constraits
+from zencad.mbody.rigid_body import rigid_body
 #import zencad.mbody.kinematic as kinematic
 from zencad.libs.inertia import inertia
 from zencad.libs.screw import screw
@@ -38,7 +38,7 @@ c = constraits.rotator_constrait(ax=(0,1,0))
 c.attach_positive_connection(body=b, radius=pyservoce.vector3(0,0,0))
 c.attach_negative_connection(body=a, radius=pyservoce.vector3(20,0,0))
 
-solver = zencad.elibs.solver.matrix_solver(rigid_bodies=[a,b], constraits=[c,c1])
+solver = zencad.mbody.solver.matrix_solver(rigid_bodies=[a,b], constraits=[c,c1])
 solver.update_views()
 solver.update_globals()
 

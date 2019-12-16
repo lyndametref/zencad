@@ -6,9 +6,9 @@ import zencad
 import time
 from zencad import *
 
-import zencad.elibs.solver
-import zencad.elibs.constraits as constraits
-from zencad.elibs.rigid_body import rigid_body
+import zencad.mbody.solver
+import zencad.mbody.constraits as constraits
+from zencad.mbody.rigid_body import rigid_body
 #import zencad.mbody.kinematic as kinematic
 from zencad.libs.inertia import inertia
 from zencad.libs.screw import screw
@@ -80,7 +80,7 @@ c110.attach(rl110, translate(0,0,L/2), rl111, translate(0,0,-L/2))
 #c111.attach(rl111, translate(0,0,0), rl00, translate(0,0,0))
 
 
-solver = zencad.elibs.solver.matrix_solver(
+solver = zencad.mbody.solver.matrix_solver(
 	rigid_bodies=[rl00,rl10,rl11,rl01, rl100,rl110,rl111,rl101], 
 	constraits=[c00,c01,c10,c11,c100,c101,c110])
 solver.update_views()
