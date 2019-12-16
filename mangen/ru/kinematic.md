@@ -4,7 +4,7 @@
 
 Бблиотека определяет дополнительные типы unit:
 
-zencad.libs.kinematic.rotator - поворотное звено
-zencad.libs.kinematic.actuator - актуаторное звено
+zencad.mbody.kinematic.rotator - поворотное звено
+zencad.mbody.kinematic.actuator - актуаторное звено
 
 UNDER_CONSTRUCT

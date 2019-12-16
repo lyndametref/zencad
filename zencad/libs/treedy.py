@@ -1,11 +1,11 @@
 #!/usr/bin/env pyython3
 
 import pyservoce
-import zencad.libs.kinematic
+import zencad.mbody.kinematic
 import zencad.libs.inertia
 from zencad.libs.screw import screw
 
-from zencad.libs.kinematic import kinematic_frame
+from zencad.mbody.kinematic import kinematic_frame
 from zencad.libs.dynsolver import dynamic_solver
 
 import zencad.libs.rigid_body as rigid_body

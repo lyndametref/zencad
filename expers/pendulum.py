@@ -7,7 +7,7 @@ import zencad.libs.treedy as treedy
 import zencad.libs.forces as forces
 import zencad.libs.inertia as inertia
 from zencad.libs.screw import screw
-import zencad.libs.kinematic as kinematic
+import zencad.mbody.kinematic as kinematic
 
 import numpy
 

@@ -2,7 +2,7 @@
 
 from zencad import *
 import zencad.malgo
-import zencad.libs.kinematic
+import zencad.mbody.kinematic
 import zencad.libs.rigidity
 import zencad.geom.curve3
 from zencad.libs.screw import screw
@@ -59,7 +59,7 @@ class rod:
 		#self.els[-1].link(zencad.assemble.unit(shape = cylinder(r=5, h=20).rotate(rvec/nrvec, nrvec)))
 
 		self.force_model = zencad.libs.rigidity.force_model_mass_point(self, 0.5, vec=(0,0,-9.81))
-		self.rotator = zencad.libs.kinematic.rotator(parent=self.els[-1].connector, ax=ax)
+		self.rotator = zencad.mbody.kinematic.rotator(parent=self.els[-1].connector, ax=ax)
 
 		self.input = self.els[0]
 		self.output = self.rotator
@@ -76,7 +76,7 @@ r1 = rod(200, 1, ax=(0,0,1))
 r2 = rod(200, 1, ax=(0,1,0))
 
 mass = mass()
-rot = zencad.libs.kinematic.rotator(ax=(0,1,0))
+rot = zencad.mbody.kinematic.rotator(ax=(0,1,0))
 rot.link(r0.input)
 r0.output.link(r1.input)
 r1.output.link(r2.input)
@@ -128,7 +128,7 @@ tmodel = mass.global_pose
 
 starttime = time.time() 
 lasttime = time.time()
-chain = zencad.libs.kinematic.kinematic_chain(mass)
+chain = zencad.mbody.kinematic.kinematic_chain(mass)
 iteration = 0
 def animate(wdg):
 	global tmodel

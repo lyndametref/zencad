@@ -8,7 +8,7 @@ import time
 import zencad.libs.treedy as treedy
 import zencad.libs.forces as forces
 from zencad.libs.screw import screw
-import zencad.libs.kinematic as kinematic
+import zencad.mbody.kinematic as kinematic
 import zencad.libs.inertia as inertia
 
 L = 100

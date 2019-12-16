@@ -1,5 +1,5 @@
-from zencad.libs.kinematic import *
-import zencad.libs.kinematic as kinematic
+from zencad.mbody.kinematic import *
+import zencad.mbody.kinematic as kinematic
 import zencad.libs.inertia
 import zencad.transform
 
@@ -68,7 +68,7 @@ class dynamic_solver:
 			self.find_all_inertial_objects(u, retarr)
 
 	def find_all_kinematic_frames(self, unit, retarr):
-		if isinstance(unit, zencad.libs.kinematic.kinematic_frame):
+		if isinstance(unit, zencad.mbody.kinematic.kinematic_frame):
 			retarr.append(unit)
 
 		for u in unit.childs:

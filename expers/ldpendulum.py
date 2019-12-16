@@ -7,7 +7,7 @@ import zencad.libs.lagrange as lagrange
 import zencad.libs.forces as forces
 import zencad.libs.inertia as inertia
 from zencad.libs.screw import screw
-import zencad.libs.kinematic as kinematic
+import zencad.mbody.kinematic as kinematic
 
 L = 100
 arot = kinematic.rotator(name="AROT",ax=(1,0,0))
