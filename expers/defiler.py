@@ -4,7 +4,7 @@ import time
 from zencad import *
 import zencad.assemble
 import zencad.malgo
-import zencad.libs.kinematic
+import zencad.mbody.kinematic
 from zencad.libs.screw import screw
 
 class defiler(zencad.assemble.unit):
@@ -20,7 +20,7 @@ class defiler(zencad.assemble.unit):
 			def __init__(self, ax=(0,1,0)):
 				super().__init__()
 				self.set_shape(cylinder(r=self.r, h=self.h))
-				self.rot=zencad.libs.kinematic.rotator(ax=ax, location=up(self.h))
+				self.rot=zencad.mbody.kinematic.rotator(ax=ax, location=up(self.h))
 				self.link(self.rot)
 
 		def __init__(self):
@@ -59,23 +59,23 @@ class defiler(zencad.assemble.unit):
 
 
 
-		self.brot_00 = zencad.libs.kinematic.rotator(location=move( self.x/4,self.y/2,0), ax=(0,0,1))
-		self.brot_01 = zencad.libs.kinematic.rotator(location=move(        0,self.y/2,0), ax=(0,0,1))
-		self.brot_02 = zencad.libs.kinematic.rotator(location=move(-self.x/4,self.y/2,0), ax=(0,0,1))
-		self.brot_03 = zencad.libs.kinematic.rotator(location=move(-self.x/4*2,self.y/2,0), ax=(0,0,1))
-		self.brot_10 = zencad.libs.kinematic.rotator(location=move( self.x/4,-self.y/2,0), ax=(0,0,1))
-		self.brot_11 = zencad.libs.kinematic.rotator(location=move(        0,-self.y/2,0), ax=(0,0,1))
-		self.brot_12 = zencad.libs.kinematic.rotator(location=move(-self.x/4,-self.y/2,0), ax=(0,0,1))
-		self.brot_13 = zencad.libs.kinematic.rotator(location=move(-self.x/4*2,-self.y/2,0), ax=(0,0,1))
+		self.brot_00 = zencad.mbody.kinematic.rotator(location=move( self.x/4,self.y/2,0), ax=(0,0,1))
+		self.brot_01 = zencad.mbody.kinematic.rotator(location=move(        0,self.y/2,0), ax=(0,0,1))
+		self.brot_02 = zencad.mbody.kinematic.rotator(location=move(-self.x/4,self.y/2,0), ax=(0,0,1))
+		self.brot_03 = zencad.mbody.kinematic.rotator(location=move(-self.x/4*2,self.y/2,0), ax=(0,0,1))
+		self.brot_10 = zencad.mbody.kinematic.rotator(location=move( self.x/4,-self.y/2,0), ax=(0,0,1))
+		self.brot_11 = zencad.mbody.kinematic.rotator(location=move(        0,-self.y/2,0), ax=(0,0,1))
+		self.brot_12 = zencad.mbody.kinematic.rotator(location=move(-self.x/4,-self.y/2,0), ax=(0,0,1))
+		self.brot_13 = zencad.mbody.kinematic.rotator(location=move(-self.x/4*2,-self.y/2,0), ax=(0,0,1))
 
-		self.rot_00 = zencad.libs.kinematic.rotator(ax=(1,0,0))
-		self.rot_01 = zencad.libs.kinematic.rotator(ax=(1,0,0))
-		self.rot_02 = zencad.libs.kinematic.rotator(ax=(1,0,0))
-		self.rot_03 = zencad.libs.kinematic.rotator(ax=(1,0,0))
-		self.rot_10 = zencad.libs.kinematic.rotator(ax=(-1,0,0))
-		self.rot_11 = zencad.libs.kinematic.rotator(ax=(-1,0,0))
-		self.rot_12 = zencad.libs.kinematic.rotator(ax=(-1,0,0))
-		self.rot_13 = zencad.libs.kinematic.rotator(ax=(-1,0,0))
+		self.rot_00 = zencad.mbody.kinematic.rotator(ax=(1,0,0))
+		self.rot_01 = zencad.mbody.kinematic.rotator(ax=(1,0,0))
+		self.rot_02 = zencad.mbody.kinematic.rotator(ax=(1,0,0))
+		self.rot_03 = zencad.mbody.kinematic.rotator(ax=(1,0,0))
+		self.rot_10 = zencad.mbody.kinematic.rotator(ax=(-1,0,0))
+		self.rot_11 = zencad.mbody.kinematic.rotator(ax=(-1,0,0))
+		self.rot_12 = zencad.mbody.kinematic.rotator(ax=(-1,0,0))
+		self.rot_13 = zencad.mbody.kinematic.rotator(ax=(-1,0,0))
 		
 		self.arms = [self.arm_00, self.arm_01, self.arm_02, self.arm_03, self.arm_10, self.arm_11, self.arm_12, self.arm_13]
 		self.rots = [self.rot_00, self.rot_01, self.rot_02, self.rot_03, self.rot_10, self.rot_11, self.rot_12, self.rot_13]
@@ -93,7 +93,7 @@ class defiler(zencad.assemble.unit):
 
 		self.arm_chains = []
 		for arm in self.arms:
-			self.arm_chains.append(zencad.libs.kinematic.kinematic_chain(arm.arm_node_6.rot))
+			self.arm_chains.append(zencad.mbody.kinematic.kinematic_chain(arm.arm_node_6.rot))
 
 targets = [[],[]]
 

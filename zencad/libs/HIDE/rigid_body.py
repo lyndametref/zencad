@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import zencad.libs.inertia
-import zencad.libs.kinematic as kinematic
+import zencad.mbody.kinematic as kinematic
 from zencad.libs.screw import screw
 
 

@@ -1,5 +1,5 @@
 from zencad.libs.screw import screw
-from zencad.libs.kinematic import *
+from zencad.mbody.kinematic import *
 from zencad.libs.dynsolver import dynamic_solver
 
 class lagrange_solver(dynamic_solver):
@@ -22,7 +22,7 @@ class lagrange_solver(dynamic_solver):
 			self.find_all_inertial_objects(u, retarr)
 
 	def find_all_kinematic_frames(self, unit, retarr):
-		if isinstance(unit, zencad.libs.kinematic.kinematic_frame):
+		if isinstance(unit, zencad.mbody.kinematic.kinematic_frame):
 			retarr.append(unit)
 
 		for u in unit.childs:

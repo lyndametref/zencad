@@ -9,7 +9,7 @@ from zencad import *
 import zencad.elibs.solver
 import zencad.elibs.constraits as constraits
 from zencad.elibs.rigid_body import rigid_body
-#import zencad.libs.kinematic as kinematic
+#import zencad.mbody.kinematic as kinematic
 from zencad.libs.inertia import inertia
 from zencad.libs.screw import screw
 numpy.set_printoptions(suppress=True)

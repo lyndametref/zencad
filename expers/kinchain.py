@@ -1,7 +1,7 @@
 #!/usr/bin/env python3 
 
 from zencad import *
-import zencad.libs.kinematic as kin
+import zencad.mbody.kinematic as kin
 import zencad.assemble as assemble
 
 u0 = assemble.unit(name="u0")

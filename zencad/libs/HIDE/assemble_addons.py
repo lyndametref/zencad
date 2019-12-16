@@ -1,5 +1,5 @@
 from zencad.libs.screw import screw
-from zencad.libs.kinematic import kinematic_frame
+from zencad.mbody.kinematic import kinematic_frame
 import zencad.libs.screw
 import pyservoce
 

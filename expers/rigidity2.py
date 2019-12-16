@@ -2,7 +2,7 @@
 
 from zencad import *
 import zencad.malgo
-import zencad.libs.kinematic as kinematic
+import zencad.mbody.kinematic as kinematic
 import zencad.libs.rigidity
 import zencad.geom.curve3
 from zencad.libs.screw import screw
