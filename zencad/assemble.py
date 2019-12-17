@@ -29,8 +29,10 @@ class unit:
 				name=None):    
 		self.parent = parent
 		self.shape = shape
-		self.location = evalcache.unlazy_if_need(location) # deprecated
-		self.location = evalcache.unlazy_if_need(pose)
+		if location is not None:
+			self.location = evalcache.unlazy_if_need(location) # deprecated
+		else:
+			self.location = evalcache.unlazy_if_need(pose)
 		self.global_pose = self.location
 		self.name = name
 		self.color = None
