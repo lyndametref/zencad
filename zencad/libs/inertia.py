@@ -5,9 +5,7 @@ import numpy
 
 class inertia:
 	def __init__(self, mass=1, matrix=pyservoce.matrix33(1,1,1), radius=pyservoce.vector3(0,0,0)):
-		if not isinstance(radius, pyservoce.vector3):
-			raise Exception("radius is not vector3")
-		self.radius = radius
+		self.radius = pyservoce.vector3(radius)
 		self.matrix = matrix
 		self.invmatrix = self.matrix.inverse()
 		self.mass = mass
@@ -32,6 +30,21 @@ class inertia:
 			self.mass,
 			invrot * self.matrix * rot,
 			trans(self.radius)
+		)
+
+	def transform(self, trans):
+		""" Преобразование инерции в другую систему координат.
+			trans - оператор преобразования текущей системы в новую.
+			Для выполнения операции мы поворачиваем матрицу и меняем радиус вектор.
+			Трансляция радиус вектора происходит по закону преобразования точки.
+		"""
+
+		rot = trans.rotation().to_matrix()
+		invrot = rot.transpose()
+		return inertia(
+			self.mass,
+			invrot * self.matrix * rot,
+			trans(self.radius) + trans.translation() 
 		)
 
 	def to_mass_matrix(self):
@@ -181,9 +194,12 @@ class inertial_object:
 
 
 
-def attach_inertia(unit, 
-		radius=pyservoce.vector3(), 
-		mass=1, 
-		Ix=1, Iy=1, Iz=1, Ixy=0, Ixz=0, Iyz=0):
-	unit.inertial_object = zencad.libs.inertia.inertial_object( 
-		unit=unit, radius=radius, mass=mass, Ix=Ix, Iy=Iy, Iz=Iz, Ixy=Ixy, Ixz=Ixz, Iyz=Iyz)
+#def attach_inertia(unit, 
+#		radius=pyservoce.vector3(), 
+#		mass=1, 
+#		Ix=1, Iy=1, Iz=1, Ixy=0, Ixz=0, Iyz=0):
+	#unit.inertial_object = zencad.libs.inertia.inertial_object( 
+	#	unit=unit, radius=radius, mass=mass, Ix=Ix, Iy=Iy, Iz=Iz, Ixy=Ixy, Ixz=Ixz, Iyz=Iyz)
+
+def attach_inertia(unit, iner):
+	unit.inertia = iner

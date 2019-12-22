@@ -502,6 +502,8 @@ class MainWindow(QMainWindow, zencad.gui.actions.MainWindowActionsMixin):
 		#if self.open_in_progress == False:
 		#	return
 
+		size = self.vsplitter.widget(0).size()
+		self.screen_label.resize(size)
 		self.replace_widget(self.screen_label)
 		self.open_bottom_half()
 

@@ -14,6 +14,26 @@ from abc import ABC, abstractmethod
 #	def __init__(self, *args, **kwargs):
 #		super().__init__(*args, **kwargs)
 
+class unit_section:
+	def __init__(self, base, kinframe = None):
+		self.base = base
+		self.group = self.collect_group(self.base)
+		self.kinframe = kinframe
+
+	def collect_group(self):
+		ret = []
+
+		def foo(u):
+			for c in u.childs:
+				if isinstance(u, kinematic_frame):
+					return
+				ret.append(u)
+				foo(c)
+
+		foo(unit)
+		return ret
+
+
 class kinematic_frame(zencad.assemble.unit):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -58,6 +78,12 @@ class kinematic_frame(zencad.assemble.unit):
 
 	def linear_speed(self):
 		return self.spdscrew.lin
+
+	def collect_inertia(self):
+		units = find_kinframe_units(self)
+		uiners = [ u for u in units if hasattr(u, "inertia") ]
+		iners = [ uiners.inertia.transform(self.global_pose.inverse() * u.global_pose) for u in uiners ]
+		self.kinframe_inertia = zencad.libs.inertia.complex_inertia(iners)
 	
 	#def reduce_forces_as_prereaction(self):
 	#	self.output.reduce_forces()
@@ -421,4 +447,21 @@ def for_each_units_in_kinframe(kinframe, doit):
 		if not isinstance(unit, kinematic_frame):
 			for u in unit.childs:
 				func(u)
-	func(kinframe.output)		
+	func(kinframe.output)	
+
+def find_kinframe_units(kinframe):
+	return section_units(kinframe.output)
+
+
+def find_all_kinframes(unit):
+	ret = []
+
+	def foo(u):
+		if isinstance(u, kinematic_frame):
+			ret.append(u)
+
+		for c in u.childs:
+			foo(c)
+
+	foo(unit)
+	return ret

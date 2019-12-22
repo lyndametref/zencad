@@ -1,6 +1,52 @@
 #!/usr/bin/env
 
 from zencad.libs.screw import screw
+import zencad.mbody.kinematic as kinematic
+
+class unit_section:
+	def __init__(self, base, kinframe = None):
+		self.base = base
+		self.group = self.collect_group(self.base)
+		self.parent = None
+		self.kinframe = kinframe
+		if self.kinframe:
+			kinframe.linked_unit_section = self
+
+	def restore_tree(self):
+		self.childs = []
+		def foo(u):
+			for c in u.childs:
+				if isinstance(u, kinematic_frame):
+					u.linked_unit_section.parent = self
+					self.childs.append(u.linked_unit_section)
+					continue
+				foo(c)
+
+		foo(self.unit)
+
+	def collect_group(self):
+		ret = []
+
+		def foo(u):
+			for c in u.childs:
+				if isinstance(u, kinematic_frame):
+					continue
+				ret.append(u)
+				foo(c)
+
+		foo(self.base)
+		return ret
+
+	def make_body(self):
+		self.iners = []
+		
+		for u in self.group:
+			if hasattr(u, "inertia"):
+				trans = self.base.global_pose.inverse() * u.global_pose()
+				self.iners.append(u.inertia.transform(trans))
+
+		self.inertia = inertia.complex_inertia(self.iners)
+		self.body = rigid_body.rigid_body(pose=self.baseunit, inertia=self.inertia)
 
 
 class kintranslator:
@@ -11,21 +57,33 @@ class kintranslator:
 	FREE_SPACE_MODE = 0
 	CONSTRAIT_MODE = 1
 
-	def __init__(self, baseunit):
+	def __init__(self, baseunit, mode=FREE_SPACE_MODE):
 		self.baseunit = baseunit
+		self.mode = mode
 
-	def build(self, mode=FREE_SPACE_MODE):
-		self.kinframes = self.collect_all_kinframes()
-		self.collect_all_kinframe_inertia()
+	def build(self):
+		self.baseunit.update_pose()
+		self.kinframes = kinematic.find_all_kinframes(self.baseunit)
 
-		if mode == self.FREE_SPACE_MODE:
+		self.base_section = unit_section(baseunit)
+		self.sections = [ self.base_section ]
+		for kin in self.kinframes:
+			self.sections.append(unit_section(kin.output, kinframe=kin))
+
+		for sect in self.sections:
+			sect.make_body()
+
+
+
+		if self.mode == self.FREE_SPACE_MODE:
 			pass
 
-		elif mode == self.CONSTRAIT_MODE:
-			pass
+		elif self.mode == self.CONSTRAIT_MODE:
+			c = constraits.close(self.baseunit.)
+			self.constraits.append()
 
-	def collect_all_kinframes(self):
-		pass
+
+		return self.rigids, self.constraits
 
 	def collect_all_kinframe_inertia(self):
 		for k in self.kinframes:
