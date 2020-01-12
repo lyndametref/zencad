@@ -48,6 +48,14 @@ class unit_section:
 		self.inertia = inertia.complex_inertia(self.iners)
 		self.body = rigid_body.rigid_body(pose=self.baseunit, inertia=self.inertia)
 
+	def attach_constrait_connections(self):
+		self.connections = []
+
+		if self.kinframe:
+			self.connections.append(self.kinframe.output_constrait_connection())
+		
+		for s in self.childs:
+			self.connections.append(s.kinframe.input_constrait_connection())
 
 class kintranslator:
 	"""Решает задачу построения динамической модели 

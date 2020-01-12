@@ -14,24 +14,6 @@ from abc import ABC, abstractmethod
 #	def __init__(self, *args, **kwargs):
 #		super().__init__(*args, **kwargs)
 
-class unit_section:
-	def __init__(self, base, kinframe = None):
-		self.base = base
-		self.group = self.collect_group(self.base)
-		self.kinframe = kinframe
-
-	def collect_group(self):
-		ret = []
-
-		def foo(u):
-			for c in u.childs:
-				if isinstance(u, kinematic_frame):
-					return
-				ret.append(u)
-				foo(c)
-
-		foo(unit)
-		return ret
 
 
 class kinematic_frame(zencad.assemble.unit):
