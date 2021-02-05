@@ -1,216 +1,354 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>ZenCad</title>
     <link href="../main.css" rel="stylesheet">
-  </head>
-  <body>
-    <meta charset="utf-8">
-    <div class="header" id="header">
-      <h1>
+</head>
+<body>
+<meta charset="utf-8">
+<div class="header" id="header">
+    <h1>
         <a class="header_ref" href="index.html">ZenCad</a>
-      </h1>
-      <a class="btn btn-github" href="https://github.com/mirmik/zencad">View on GitHub
+    </h1>
+    <a class="btn btn-github" href="https://github.com/mirmik/zencad">View on GitHub
         <span class="icon"></span>
-      </a>
-      <p>
+    </a>
+    <p>
         <a href="../ru/sweep.html">Ru</a>
         <a href="../en/sweep.html">En</a>
-      </p>
-    </div>
-    <div id="content">
-      <nav class="nav"><ul>
-<li><a href="index.html">Main page</a></li>
-<li><a href="helloworld.html">Helloworld example</a></li>
-<li><a href="installation.html">Installation</a></li>
-<li>Basic conceptions
-<ul>
-<li><a href="scriptcad.html">Scripting CAD</a></li>
-<li><a href="geomcore.html">Boundary representation</a></li>
-<li><a href="caching.html">Lazy evaluations</a></li>
-</ul></li>
-<li>Basic primitives and utilities
-<ul>
-<li><a href="prim3d.html">Solid primitives</a>  </li>
-<li><a href="prim2d.html">Plane primitives</a>  </li>
-<li><a href="prim1d.html">Lines and cycles</a>  </li>
-<li><a href="prim0d.html">Points, vectors, utilities</a></li>
-</ul></li>
-<li>Transformations, geometric operations
-<ul>
-<li><a href="trans0.html">Aphine transform</a>  </li>
-<li><a href="bool.html">Boolean operations</a></li>
-<li><a href="fillet.html">Topologically dependent operations</a>  </li>
-<li><a href="ops3d.html">Reference geometry</a></li>
-<li><a href="sweep.html">Sweep operations</a></li>
-<li><a href="trimesh.html">Triangulate and meshing</a></li>
-<li><a href="other.html">Other operations</a></li>
-</ul></li>
-<li>Reflection and analysis
-<ul>
-<li><a href="reflect.html">Geometric reflection</a></li>
-<li><a href="crvalgo.html">Curve analysis</a></li>
-<li><a href="surfalgo.html">Surface analysis</a></li>
-<li><a href="geomprop.html">Geometric properties</a></li>
-</ul></li>
-<li>Visualization
-<ul>
-<li><a href="show.html">Displaying</a></li>
-<li><a href="interactive_object.html">Interactive object</a>  </li>
-<li><a href="assemble.html">Hierarchical models</a></li>
-<li><a href="animate.html">Animation</a></li>
-</ul></li>
-<li><a href="gui.html">Graphical user interface</a></li>
-<li><a href="expimp.html">Export/Import</a></li>
-<li><a href="internal.html">Internal ZenCad's kitchen</a></li>
-</ul>
-</nav>
-      <article class="article">English version in preparation. COMMING SOON.<hr />
+    </p>
+</div>
+<div id="content">
+    <nav class="nav">
+        <ul>
+            <li><a href="index.html">Main page</a></li>
+            <li><a href="helloworld.html">Helloworld example</a></li>
+            <li><a href="installation.html">Installation</a></li>
+            <li>Basic conceptions
+                <ul>
+                    <li><a href="scriptcad.html">Scripting CAD</a></li>
+                    <li><a href="geomcore.html">Boundary representation</a></li>
+                    <li><a href="caching.html">Lazy evaluations</a></li>
+                </ul>
+            </li>
+            <li>Basic primitives and utilities
+                <ul>
+                    <li><a href="prim3d.html">Solid primitives</a></li>
+                    <li><a href="prim2d.html">Plane primitives</a></li>
+                    <li><a href="prim1d.html">Lines and cycles</a></li>
+                    <li><a href="prim0d.html">Points, vectors, utilities</a></li>
+                </ul>
+            </li>
+            <li>Transformations, geometric operations
+                <ul>
+                    <li><a href="trans0.html">Aphine transform</a></li>
+                    <li><a href="bool.html">Boolean operations</a></li>
+                    <li><a href="fillet.html">Topologically dependent operations</a></li>
+                    <li><a href="ops3d.html">Reference geometry</a></li>
+                    <li><a href="sweep.html">Sweep operations</a></li>
+                    <li><a href="trimesh.html">Triangulate and meshing</a></li>
+                    <li><a href="other.html">Other operations</a></li>
+                </ul>
+            </li>
+            <li>Reflection and analysis
+                <ul>
+                    <li><a href="reflect.html">Geometric reflection</a></li>
+                    <li><a href="crvalgo.html">Curve analysis</a></li>
+                    <li><a href="surfalgo.html">Surface analysis</a></li>
+                    <li><a href="geomprop.html">Geometric properties</a></li>
+                </ul>
+            </li>
+            <li>Visualization
+                <ul>
+                    <li><a href="show.html">Displaying</a></li>
+                    <li><a href="interactive_object.html">Interactive object</a></li>
+                    <li><a href="assemble.html">Hierarchical models</a></li>
+                    <li><a href="animate.html">Animation</a></li>
+                </ul>
+            </li>
+            <li><a href="gui.html">Graphical user interface</a></li>
+            <li><a href="expimp.html">Export/Import</a></li>
+            <li><a href="internal.html">Internal ZenCad's kitchen</a></li>
+        </ul>
+    </nav>
+    <article class="article">English version in preparation. COMMING SOON.
+        <hr/>
 
-<h1 id="-1">Траекторная развёртка.</h1>
+        <h1 id="-1">Trajectory unfolding. </h1>
+        <p> A wide class of operations of reference geometry represent operations, constructing a body by translation
+            (English sweep) of a certain profile or a family of profiles (<em> profile </em>, <em> profiles </em>) along
+            a given paths <em> spine </em>. </p>
+        <h2 id="- 2"> Formally, what a trajectory sweep is: </h2>
+        <p> A path sweep is a technique for constructing a surface by sweeping a profile along a path. In general, the
+            profile view is not constant and can change according to certain laws. Thus, there are two questions
+            regarding how the profile extends along the trajectory, or, in other words, we must define two laws,
+            namely: </p>
+        <ol>
+            <li> The law that determines the shape of the trajectory.</li>
+            <li> The law that determines the shape of the profile.</li>
+        </ol>
+        <p> The second law is conveniently divided into two sub-laws: 1.1. The law that determines the shape of the
+            translated body. 1.2. The law that determines the angular evolution of the basis. </p>
+        <p> In fact, the variety of all trajectory translation operations available in the system are different forms of
+            answers to these questions.
+        <p>
+        <h3 id="- 3"> Franne's triangle. </h3>
+        <p> UNDER_CONSTRUCTION </p>
+        <hr>
+        <h2 id="- 4"> Linear sweep.
+            <h2><p> The most frequently used method giving volume to a flat object. The operation unfolds the
+                flat body <em> face <em> along the vector <em> vec <em>. If you specify one coordinate instead
+                    of a vector, the model will be stretched in the positive direction of the Z axis.When the
+                    center option is specified, after the operation is performed, the model will be translated
+                    in the direction opposite to vec by its half length.</p>
+                <p> Signature:</p>
 
-<p>Широкий класс операций ссылочной геометрии представляют операции, построения тела путём трансляции (англ. sweep) некоторого профиля или семейства профилей (<em>profile</em>, <em>profiles</em>) вдоль заданной траектории <em>spine</em>.</p>
+                <div class="codehilite"><pre><span></span><code><span class="n">extrude</span><span
+                        class="p">(</span><span class="n">proto</span><span class="o">=</span><span
+                        class="n">face</span><span
+                        class="p">,</span> <span class="n">vec</span><span class="o">=</span><span
+                        class="p">(</span><span class="n">x</span><span class="p">,</span><span
+                        class="n">y</span><span class="p">,</span><span class="n">z</span><span
+                        class="p">),</span> <span class="n">center</span><span class="o">=</span><span
+                        class="bp">True</span><span class="o">/</span><span class="bp">False</span><span
+                        class="p">)</span>
+<span class="n">extrude</span><span class="p">(</span><span class="n">proto</span><span class="o">=</span><span
+                            class="n">face</span><span class="p">,</span> <span class="n">vec</span><span
+                            class="o">=</span><span class="n">z</span><span class="p">,</span> <span
+                            class="n">center</span><span
+                            class="o">=</span><span class="bp">True</span><span class="o">/</span><span
+                            class="bp">False</span><span class="p">)</span> <span
+                            class="c1">#equal: vec=(0,0,z)</span>
+<span class="n">face</span><span class="o">.</span><span class="n">extrude</span><span class="p">(</span><span
+                            class="n">vec</span><span class="p">)</span> <span class="c1">#alternate</span>
+</code></pre>
+                </div>
 
-<h2 id="-2">Формально о том, что такое траекторная развёртка:</h2>
+                <p>Пример:</p>
 
-<p>Траекторная развёртка - это методика построения поверхности путём протягивания профиля вдоль траектории. В общем случае вид профиля непостояннен и может меняться по определённым законам. Таким образом, относительно того, как профиль протягивается вдоль траектории существует два вопроса, или, иными словами, мы должны определить два закона, а именно:</p>
+                <div class="codehilite"><pre><span></span><code><span class="n">ngon</span><span
+                        class="p">(</span><span class="n">r</span><span class="o">=</span><span
+                        class="mi">10</span><span class="p">,</span> <span class="n">n</span><span
+                        class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ngon</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span
+                            class="mi">10</span><span class="p">,</span> <span class="n">n</span><span
+                            class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span
+                            class="n">extrude</span><span class="p">(</span><span class="mi">4</span><span
+                            class="p">)</span>
+<span class="n">extrude</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span
+                            class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span
+                            class="p">),</span> <span class="n">ngon</span><span class="p">(</span><span
+                            class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span
+                            class="n">n</span><span class="o">=</span><span class="mi">10</span><span
+                            class="p">))</span>
+<span class="n">extrude</span><span class="p">(</span><span class="n">textshape</span><span class="p">(</span><span
+                            class="n">text</span><span class="o">=</span><span
+                            class="s2">&quot;TextShape&quot;</span><span class="p">,</span> <span
+                            class="n">fontpath</span><span
+                            class="o">=</span><span class="n">FONTPATH</span><span class="p">,</span> <span
+                            class="n">size</span><span class="o">=</span><span class="mi">100</span><span
+                            class="p">),</span> <span class="mi">20</span><span class="p">)</span>
+</code></pre>
+                </div>
 
-<ol>
-<li>Закон, определяющий форму траектории.</li>
-<li>Закон определяющий форму профиля.</li>
-</ol>
+                <p><img src="../images/generic/extrude0.png" alt=""/>
+                    <img src="../images/generic/extrude1.png" alt=""/> <br/>
+                    <img src="../images/generic/extrude2.png" alt=""/>
+                    <img src="../images/generic/extrude3.png" alt=""/></p>
 
-<p>Второй закон удобно разбить на два подзакона: 
-1.1. Закон, определяющий форму транслируемого тела.
-1.2. Закон, определяющий угловую эволюцию базиса.</p>
+                <hr/>
 
-<p>По сути, многообразие всех имеющихся в системе операций траекторной трансляции - суть разные формы ответов на эти вопросы. </p>
+                <h2 id="-5">Труба.</h2>
 
-<h3 id="-3">Трёхгранник Фрэне.</h3>
+                <p>Строит на основе траектории <em>spine</em> и профиля круглого сечения радиуса <em>r</em>.
+                    <em>maxdegree</em> максимальная степень bspline поверхности.
+                    <em>maxsegm</em> - ?
+                    <em>bounds</em> - при установке этой опции операция возвращает кортеж из резултьата, а также
+                    профилей в первой и последней позициях.</p>
 
-<p>UNDER_CONSTRUCT</p>
+                <p>Сигнатура:</p>
 
-<hr />
+                <div class="codehilite"><pre><span></span><code><span class="n">tube</span><span
+                        class="p">(</span><span class="n">spine</span><span class="p">,</span> <span
+                        class="n">r</span><span class="p">,</span> <span class="n">tol</span><span
+                        class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span
+                        class="n">cont</span><span
+                        class="o">=</span><span class="mi">2</span><span class="p">,</span> <span
+                        class="n">maxdegree</span><span
+                        class="o">=</span><span class="mi">3</span><span class="p">,</span> <span
+                        class="n">maxsegm</span><span
+                        class="o">=</span><span class="mi">20</span><span class="p">,</span> <span
+                        class="n">bounds</span><span
+                        class="o">=</span><span class="bp">False</span><span class="p">):</span>
+</code></pre>
+                </div>
 
-<h2 id="-4">Линейная развёртка.</h2>
+                <p>Примеры:</p>
 
-<p>Самый часто используемый метод придания объёма плоскому объекту. Операция разворачивает плоское тело <em>face</em> по вектору <em>vec</em>. Если вместо вектора указать одну координату, модель будет вытянута в положительном направлении оси Z.
-При указании опции center, после выполнения операции модель будет транслирована в направлении обратном vec на его половинную длину.</p>
+                <div class="codehilite"><pre><span></span><code><span class="n">POINTS</span> <span
+                        class="o">=</span> <span class="p">[</span> <span class="p">(</span><span
+                        class="mi">0</span><span class="p">,</span><span class="mi">0</span><span
+                        class="p">,</span><span class="mi">0</span><span class="p">),</span> <span
+                        class="p">(</span><span class="mi">0</span><span class="p">,</span><span
+                        class="mi">0</span><span class="p">,</span><span class="mi">20</span><span
+                        class="p">),</span> <span class="p">(</span><span class="mi">0</span><span
+                        class="p">,</span><span class="mi">20</span><span class="p">,</span><span
+                        class="mi">40</span><span class="p">),</span>
+    <span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span><span class="mi">20</span><span
+                            class="p">,</span><span class="mi">40</span><span class="p">),</span> <span
+                            class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span><span
+                            class="mi">20</span><span class="p">,</span><span class="mi">20</span><span
+                            class="p">),</span> <span class="p">(</span><span class="mi">0</span><span
+                            class="p">,</span><span class="mi">20</span><span class="p">,</span><span
+                            class="mi">0</span><span class="p">)</span> <span class="p">]</span>
+<span class="n">spine</span> <span class="o">=</span> <span class="n">rounded_polysegment</span><span class="p">(</span><span
+                            class="n">POINTS</span><span class="p">,</span> <span class="n">r</span><span
+                            class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">tube</span><span class="p">(</span><span class="n">spine</span><span
+                            class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">5</span><span
+                            class="p">)</span>
 
-<p>Сигнатура:</p>
+<span class="n">POINTS</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span
+                            class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span
+                            class="mi">0</span><span class="p">),</span> <span class="p">(</span><span
+                            class="mi">20</span><span class="p">,</span><span class="mi">0</span><span
+                            class="p">,</span><span class="mi">40</span><span class="p">)</span> <span
+                            class="p">]</span>
+<span class="n">TANGS</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="mi">0</span><span
+                            class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span
+                            class="p">),</span> <span class="p">(</span><span class="mi">1</span><span
+                            class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span
+                            class="p">)</span> <span class="p">]</span>
+<span class="n">spine</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span
+                            class="n">POINTS</span><span class="p">,</span> <span class="n">TANGS</span><span
+                            class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">tube</span><span class="p">(</span><span class="n">spine</span><span
+                            class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">5</span><span
+                            class="p">,</span> <span class="n">maxdegree</span><span class="o">=</span><span
+                            class="mi">8</span><span class="p">)</span>
+</code></pre>
+                </div>
 
-<div class="codehilite"><pre><span></span><code><span class="n">extrude</span><span class="p">(</span><span class="n">proto</span><span class="o">=</span><span class="n">face</span><span class="p">,</span> <span class="n">vec</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="o">/</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">extrude</span><span class="p">(</span><span class="n">proto</span><span class="o">=</span><span class="n">face</span><span class="p">,</span> <span class="n">vec</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="o">/</span><span class="bp">False</span><span class="p">)</span> <span class="c1">#equal: vec=(0,0,z)</span>
-<span class="n">face</span><span class="o">.</span><span class="n">extrude</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="c1">#alternate</span>
-</code></pre></div>
+                <p><img src="../images/generic/tube0.png" alt=""/>
+                    <img src="../images/generic/tube1.png" alt=""/></p>
 
-<p>Пример:</p>
+                <hr/>
 
-<div class="codehilite"><pre><span></span><code><span class="n">ngon</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">ngon</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">extrude</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">extrude</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">ngon</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
-<span class="n">extrude</span><span class="p">(</span><span class="n">textshape</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;TextShape&quot;</span><span class="p">,</span> <span class="n">fontpath</span><span class="o">=</span><span class="n">FONTPATH</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> <span class="mi">20</span><span class="p">)</span>
-</code></pre></div>
+                <h2 id="-6">Развёртка профиля по траектории. Развёртка с изменяемым профилем.</h2>
 
-<p><img src="../images/generic/extrude0.png" alt="" />
-<img src="../images/generic/extrude1.png" alt="" /> <br />
-<img src="../images/generic/extrude2.png" alt="" />
-<img src="../images/generic/extrude3.png" alt="" /></p>
+                <p>Операция строит тело по одному профилю или набору сменяющих друг друга профилей
+                    <em>profiles</em>, вытянутых по траектории <em>spine</em>.
+                    Указание опции <em>frenet</em> активирует закон изменения углового положения профиля в
+                    соответствии с трёхгранником Френе-Серре. Опция <em>binormal</em> активирует закон изменения
+                    углового положения профиля в соответствии с константной бинормалью.</p>
 
-<hr />
+                <p>Сигнатура:</p>
 
-<h2 id="-5">Труба.</h2>
+                <div class="codehilite"><pre><span></span><code><span class="n">pipe_shell</span><span
+                        class="p">(</span><span class="n">profiles</span><span class="p">,</span> <span
+                        class="n">spine</span><span class="p">,</span> <span class="n">frenet</span><span
+                        class="o">=</span><span class="bp">False</span><span class="p">,</span> <span
+                        class="n">binormal</span><span
+                        class="o">=</span><span class="n">vector3</span><span class="p">(</span><span
+                        class="mi">0</span><span class="p">,</span><span class="mi">0</span><span
+                        class="p">,</span><span class="mi">0</span><span class="p">),</span> <span
+                        class="n">solid</span><span
+                        class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre>
+                </div>
 
-<p>Строит на основе траектории <em>spine</em> и профиля круглого сечения радиуса <em>r</em>.
-<em>maxdegree</em> максимальная степень bspline поверхности.
-<em>maxsegm</em> - ?
-<em>bounds</em> - при установке этой опции операция возвращает кортеж из резултьата, а также профилей в первой и последней позициях.</p>
+                <p>Примеры:</p>
 
-<p>Сигнатура:</p>
+                <div class="codehilite"><pre><span></span><code>
+</code></pre>
+                </div>
 
-<div class="codehilite"><pre><span></span><code><span class="n">tube</span><span class="p">(</span><span class="n">spine</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">cont</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">maxdegree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">maxsegm</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-</code></pre></div>
+                <p><img src="../images/generic/sweep0.png" alt=""/>
+                    <img src="../images/generic/sweep1.png" alt=""/> <br/>
+                    <img src="../images/generic/sweep2.png" alt=""/>
+                    <img src="../images/generic/sweep3.png" alt=""/> <br/>
+                    <img src="../images/generic/sweep4.png" alt=""/></p>
 
-<p>Примеры:</p>
+                <hr/>
 
-<div class="codehilite"><pre><span></span><code><span class="n">POINTS</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">40</span><span class="p">),</span>
-    <span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">40</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">]</span>
-<span class="n">spine</span> <span class="o">=</span> <span class="n">rounded_polysegment</span><span class="p">(</span><span class="n">POINTS</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">tube</span><span class="p">(</span><span class="n">spine</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> 
+                <h2 id="-7">Тело вращения.</h2>
 
-<span class="n">POINTS</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">40</span><span class="p">)</span> <span class="p">]</span>
-<span class="n">TANGS</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="p">]</span>
-<span class="n">spine</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">POINTS</span><span class="p">,</span> <span class="n">TANGS</span><span class="p">)</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">tube</span><span class="p">(</span><span class="n">spine</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">maxdegree</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-</code></pre></div>
+                <p>Операция создания тела вращения от прототипа <em>proto</em>. При необходимости создания
+                    сектора задаётся угол <em>yaw</em>.
+                    Если указан радиус <em>r</em>, объект разворачивается на 90 градусов вокруг оси X и
+                    смещается по оси X на растояние равное радиусу <em>r</em>.</p>
 
-<p><img src="../images/generic/tube0.png" alt="" />
-<img src="../images/generic/tube1.png" alt="" /></p>
+                <p>Сигнатура:</p>
 
-<hr />
+                <div class="codehilite"><pre><span></span><code><span class="n">revol</span><span
+                        class="p">(</span><span class="n">profile</span><span class="p">,</span> <span
+                        class="n">r</span><span class="o">=</span><span class="bp">None</span><span
+                        class="p">,</span> <span class="n">yaw</span><span class="o">=</span><span
+                        class="n">deg</span><span class="p">(</span><span class="mi">360</span><span class="p">))</span>
+</code></pre>
+                </div>
 
-<h2 id="-6">Развёртка профиля по траектории. Развёртка с изменяемым профилем.</h2>
+                <p>Пример:</p>
 
-<p>Операция строит тело по одному профилю или набору сменяющих друг друга профилей <em>profiles</em>, вытянутых по траектории <em>spine</em>.
-Указание опции <em>frenet</em> активирует закон изменения углового положения профиля в соответствии с трёхгранником Френе-Серре. Опция <em>binormal</em> активирует закон изменения углового положения профиля в соответствии с константной бинормалью.</p>
+                <div class="codehilite"><pre><span></span><code>
+</code></pre>
+                </div>
 
-<p>Сигнатура:</p>
+                <p><img src="../images/generic/revol0.png" alt=""/>
+                    <img src="../images/generic/revol1.png" alt=""/> <br/>
+                    <img src="../images/generic/revol2.png" alt=""/>
+                    <img src="../images/generic/revol3.png" alt=""/></p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">pipe_shell</span><span class="p">(</span><span class="n">profiles</span><span class="p">,</span> <span class="n">spine</span><span class="p">,</span> <span class="n">frenet</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">binormal</span><span class="o">=</span><span class="n">vector3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">solid</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-</code></pre></div>
+                <hr/>
 
-<p>Примеры:</p>
+                <h2 id="-8">Тело вращения. (расширенная версия).</h2>
 
-<div class="codehilite"><pre><span></span><code>
-</code></pre></div>
+                <p>Расширенная версия операции <em>revol</em>. Строит тело вращения от прототипа <em>proto</em>
+                    на интервале угла поворота <em>yaw</em>. Указание опции <em>roll</em> позволяет изменять
+                    угол поворота прототипа по мере прохождения интервала. Тело строится по опорным копиям тела
+                    прототипа, количество копий задаётся опцией <em>n</em>. <em>nparts</em> определяет
+                    количество сегментов результирующего тела вращения.</p>
 
-<p><img src="../images/generic/sweep0.png" alt="" />
-<img src="../images/generic/sweep1.png" alt="" /> <br />
-<img src="../images/generic/sweep2.png" alt="" />
-<img src="../images/generic/sweep3.png" alt="" /> <br />
-<img src="../images/generic/sweep4.png" alt="" /></p>
+                <p>Сигнатура:</p>
 
-<hr />
+                <div class="codehilite"><pre><span></span><code><span class="n">revol2</span><span
+                        class="p">(</span><span class="n">profile</span><span class="p">,</span> <span
+                        class="n">r</span><span class="p">,</span> <span class="n">n</span><span
+                        class="o">=</span><span class="mi">30</span><span class="p">,</span> <span
+                        class="n">yaw</span><span class="o">=</span><span class="p">(</span><span
+                        class="mi">0</span><span class="p">,</span><span class="n">deg</span><span
+                        class="p">(</span><span class="mi">360</span><span class="p">)),</span> <span
+                        class="n">roll</span><span
+                        class="o">=</span><span class="p">(</span><span class="mi">0</span><span
+                        class="p">,</span><span class="mi">0</span><span class="p">),</span> <span
+                        class="n">nparts</span><span
+                        class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</code></pre>
+                </div>
 
-<h2 id="-7">Тело вращения.</h2>
+                <p>Примеры:</p>
 
-<p>Операция создания тела вращения от прототипа <em>proto</em>. При необходимости создания сектора задаётся угол <em>yaw</em>.
-Если указан радиус <em>r</em>, объект разворачивается на 90 градусов вокруг оси X и смещается по оси X на растояние равное радиусу <em>r</em>.</p>
+                <div class="codehilite"><pre><span></span><code><span class="n">revol2</span><span
+                        class="p">(</span><span class="n">profile</span><span class="o">=</span><span
+                        class="n">square</span><span
+                        class="p">(</span><span class="mi">10</span><span class="p">,</span> <span
+                        class="n">center</span><span
+                        class="o">=</span><span class="bp">True</span><span class="p">),</span> <span class="n">r</span><span
+                        class="o">=</span><span class="mi">20</span><span class="p">,</span> <span
+                        class="n">n</span><span class="o">=</span><span class="mi">60</span><span
+                        class="p">,</span> <span class="n">yaw</span><span class="o">=</span><span
+                        class="p">(</span><span class="mi">0</span><span class="p">,</span><span
+                        class="n">deg</span><span class="p">(</span><span class="mi">360</span><span
+                        class="p">)),</span> <span
+                        class="n">roll</span><span class="o">=</span><span class="p">(</span><span
+                        class="mi">0</span><span class="p">,</span><span class="n">deg</span><span
+                        class="p">(</span><span class="mi">360</span><span class="p">)))</span>
+</code></pre>
+                </div>
 
-<p>Сигнатура:</p>
-
-<div class="codehilite"><pre><span></span><code><span class="n">revol</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">yaw</span><span class="o">=</span><span class="n">deg</span><span class="p">(</span><span class="mi">360</span><span class="p">))</span>
-</code></pre></div>
-
-<p>Пример:</p>
-
-<div class="codehilite"><pre><span></span><code>
-</code></pre></div>
-
-<p><img src="../images/generic/revol0.png" alt="" />
-<img src="../images/generic/revol1.png" alt="" /> <br />
-<img src="../images/generic/revol2.png" alt="" />
-<img src="../images/generic/revol3.png" alt="" />  </p>
-
-<hr />
-
-<h2 id="-8">Тело вращения. (расширенная версия).</h2>
-
-<p>Расширенная версия операции <em>revol</em>. Строит тело вращения от прототипа <em>proto</em> на интервале угла поворота <em>yaw</em>. Указание опции <em>roll</em> позволяет изменять угол поворота прототипа по мере прохождения интервала. Тело строится по опорным копиям тела прототипа, количество копий задаётся опцией <em>n</em>. <em>nparts</em> определяет количество сегментов результирующего тела вращения.</p>
-
-<p>Сигнатура:</p>
-
-<div class="codehilite"><pre><span></span><code><span class="n">revol2</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">yaw</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">deg</span><span class="p">(</span><span class="mi">360</span><span class="p">)),</span> <span class="n">roll</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">nparts</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-</code></pre></div>
-
-<p>Примеры:</p>
-
-<div class="codehilite"><pre><span></span><code><span class="n">revol2</span><span class="p">(</span><span class="n">profile</span><span class="o">=</span><span class="n">square</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span> <span class="n">r</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">yaw</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">deg</span><span class="p">(</span><span class="mi">360</span><span class="p">)),</span> <span class="n">roll</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">deg</span><span class="p">(</span><span class="mi">360</span><span class="p">)))</span>
-</code></pre></div>
-
-<p><img src="../images/generic/revol20.png" alt="" /></p>
-</article>
-    </div>
-    <div id="footer"></div>
-  </body>
+                <p><img src="../images/generic/revol20.png" alt=""/></p>
+    </article>
+</div>
+<div id="footer"></div>
+</body>
 </html>

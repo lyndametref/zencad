@@ -1,127 +1,161 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>ZenCad</title>
     <link href="../main.css" rel="stylesheet">
-  </head>
-  <body>
-    <meta charset="utf-8">
-    <div class="header" id="header">
-      <h1>
+</head>
+<body>
+<meta charset="utf-8">
+<div class="header" id="header">
+    <h1>
         <a class="header_ref" href="index.html">ZenCad</a>
-      </h1>
-      <a class="btn btn-github" href="https://github.com/mirmik/zencad">View on GitHub
+    </h1>
+    <a class="btn btn-github" href="https://github.com/mirmik/zencad">View on GitHub
         <span class="icon"></span>
-      </a>
-      <p>
+    </a>
+    <p>
         <a href="../ru/fillet.html">Ru</a>
         <a href="../en/fillet.html">En</a>
-      </p>
-    </div>
-    <div id="content">
-      <nav class="nav"><ul>
-<li><a href="index.html">Main page</a></li>
-<li><a href="helloworld.html">Helloworld example</a></li>
-<li><a href="installation.html">Installation</a></li>
-<li>Basic conceptions
-<ul>
-<li><a href="scriptcad.html">Scripting CAD</a></li>
-<li><a href="geomcore.html">Boundary representation</a></li>
-<li><a href="caching.html">Lazy evaluations</a></li>
-</ul></li>
-<li>Basic primitives and utilities
-<ul>
-<li><a href="prim3d.html">Solid primitives</a>  </li>
-<li><a href="prim2d.html">Plane primitives</a>  </li>
-<li><a href="prim1d.html">Lines and cycles</a>  </li>
-<li><a href="prim0d.html">Points, vectors, utilities</a></li>
-</ul></li>
-<li>Transformations, geometric operations
-<ul>
-<li><a href="trans0.html">Aphine transform</a>  </li>
-<li><a href="bool.html">Boolean operations</a></li>
-<li><a href="fillet.html">Topologically dependent operations</a>  </li>
-<li><a href="ops3d.html">Reference geometry</a></li>
-<li><a href="sweep.html">Sweep operations</a></li>
-<li><a href="trimesh.html">Triangulate and meshing</a></li>
-<li><a href="other.html">Other operations</a></li>
-</ul></li>
-<li>Reflection and analysis
-<ul>
-<li><a href="reflect.html">Geometric reflection</a></li>
-<li><a href="crvalgo.html">Curve analysis</a></li>
-<li><a href="surfalgo.html">Surface analysis</a></li>
-<li><a href="geomprop.html">Geometric properties</a></li>
-</ul></li>
-<li>Visualization
-<ul>
-<li><a href="show.html">Displaying</a></li>
-<li><a href="interactive_object.html">Interactive object</a>  </li>
-<li><a href="assemble.html">Hierarchical models</a></li>
-<li><a href="animate.html">Animation</a></li>
-</ul></li>
-<li><a href="gui.html">Graphical user interface</a></li>
-<li><a href="expimp.html">Export/Import</a></li>
-<li><a href="internal.html">Internal ZenCad's kitchen</a></li>
-</ul>
-</nav>
-      <article class="article">English version in preparation. COMMING SOON.<h1 id="-1">Топологически зависимые преобразования</h1>
+    </p>
+</div>
+<div id="content">
+    <nav class="nav">
+        <ul>
+            <li><a href="index.html">Main page</a></li>
+            <li><a href="helloworld.html">Helloworld example</a></li>
+            <li><a href="installation.html">Installation</a></li>
+            <li>Basic conceptions
+                <ul>
+                    <li><a href="scriptcad.html">Scripting CAD</a></li>
+                    <li><a href="geomcore.html">Boundary representation</a></li>
+                    <li><a href="caching.html">Lazy evaluations</a></li>
+                </ul>
+            </li>
+            <li>Basic primitives and utilities
+                <ul>
+                    <li><a href="prim3d.html">Solid primitives</a></li>
+                    <li><a href="prim2d.html">Plane primitives</a></li>
+                    <li><a href="prim1d.html">Lines and cycles</a></li>
+                    <li><a href="prim0d.html">Points, vectors, utilities</a></li>
+                </ul>
+            </li>
+            <li>Transformations, geometric operations
+                <ul>
+                    <li><a href="trans0.html">Aphine transform</a></li>
+                    <li><a href="bool.html">Boolean operations</a></li>
+                    <li><a href="fillet.html">Topologically dependent operations</a></li>
+                    <li><a href="ops3d.html">Reference geometry</a></li>
+                    <li><a href="sweep.html">Sweep operations</a></li>
+                    <li><a href="trimesh.html">Triangulate and meshing</a></li>
+                    <li><a href="other.html">Other operations</a></li>
+                </ul>
+            </li>
+            <li>Reflection and analysis
+                <ul>
+                    <li><a href="reflect.html">Geometric reflection</a></li>
+                    <li><a href="crvalgo.html">Curve analysis</a></li>
+                    <li><a href="surfalgo.html">Surface analysis</a></li>
+                    <li><a href="geomprop.html">Geometric properties</a></li>
+                </ul>
+            </li>
+            <li>Visualization
+                <ul>
+                    <li><a href="show.html">Displaying</a></li>
+                    <li><a href="interactive_object.html">Interactive object</a></li>
+                    <li><a href="assemble.html">Hierarchical models</a></li>
+                    <li><a href="animate.html">Animation</a></li>
+                </ul>
+            </li>
+            <li><a href="gui.html">Graphical user interface</a></li>
+            <li><a href="expimp.html">Export/Import</a></li>
+            <li><a href="internal.html">Internal ZenCad's kitchen</a></li>
+        </ul>
+    </nav>
+    <article class="article">English version in preparation. COMMING SOON.<h1 id="-1">Topologically Dependent
+        Transformations</h1>
 
-<p>Существует класс операций, требующий в качестве параметра выбрать элемент топологии модели. В интерактивных CAD мы можем, используя указатель мыши, выделить такой элемент и указать в качестве параметра. Этот метод недоступен в скриптовом CAD. Общий подход ZenCad состоит в том, что такой элемент задаётся методом "ближайшей точки". При задании аргумента, вместо элемента топологии задаётся точка. Выбранным считается элемент, растояние до которого от элемента топологии будет минимальным. </p>
+        <p>There is an operation class that requires you to select a model topology item as a parameter. In interactive
+            CAD we can, using the mouse pointer, select such an element and specify it as a parameter. This method is
+            not available in scripted CAD. The general approach of ZenCad is that such an element is specified using the
+            "nearest point" method. When specifying an argument, a point is specified instead of a topology element. The
+            selected element is the element, the distance to which from the topology element will be minimal.</p>
 
-<hr />
+        <hr/>
 
-<h2 id="fillet">Fillet</h2>
+        <h2 id="fillet">Fillet</h2>
 
-<p>Операция скругления тела. 
-Если тело объёмное - модификации подвергаются ребра. Если плоское - вершины.
-Скругления задаются радиусом <code>r</code> и масивом ближайших точек <code>refs</code>. Если <code>refs == None</code>, выбранными считаются все элементы топологии. </p>
+        <p>Body rounding operation. If the body is solid, the edges are modified. If flat - tops. Fillets are specified
+            by radius <code> r </code> and an array of closest points <code> refs </code>. If <code> refs ==
+                None </code>, all elements of the topology are considered selected. </p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">fillet</span><span class="p">(</span><span class="n">proto</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">refs</span><span class="o">=</span><span class="n">referencedPoints</span><span class="p">)</span>
-<span class="n">fillet</span><span class="p">(</span><span class="n">proto</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">radius</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fillet</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">referencedPoints</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fillet</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
-</code></pre></div>
+        <div class="codehilite"><pre><span></span><code><span class="n">fillet</span><span class="p">(</span><span
+                class="n">proto</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span
+                class="n">r</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span
+                class="n">refs</span><span class="o">=</span><span class="n">referencedPoints</span><span
+                class="p">)</span>
+<span class="n">fillet</span><span class="p">(</span><span class="n">proto</span><span class="o">=</span><span
+                    class="n">model</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span
+                    class="n">radius</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fillet</span><span class="p">(</span><span
+                    class="n">radius</span><span class="p">,</span> <span class="n">referencedPoints</span><span
+                    class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fillet</span><span class="p">(</span><span
+                    class="n">radius</span><span class="p">)</span>
+</code></pre>
+        </div>
 
-<p><img src="../images/generic/fillet0.png" alt="" />
-<img src="../images/generic/fillet1.png" alt="" /> <br />
-<img src="../images/generic/fillet2.png" alt="" />
-<img src="../images/generic/fillet3.png" alt="" /> <br />
-<img src="../images/generic/fillet4.png" alt="" />
-<img src="../images/generic/fillet5.png" alt="" />  </p>
+        <p><img src="../images/generic/fillet0.png" alt=""/>
+            <img src="../images/generic/fillet1.png" alt=""/> <br/>
+            <img src="../images/generic/fillet2.png" alt=""/>
+            <img src="../images/generic/fillet3.png" alt=""/> <br/>
+            <img src="../images/generic/fillet4.png" alt=""/>
+            <img src="../images/generic/fillet5.png" alt=""/></p>
 
-<hr />
+        <hr/>
 
-<h2 id="chamfer">Chamfer</h2>
+        <h2 id="chamfer">Chamfer</h2>
 
-<p>Операция взятия фаски тела. В отличие от скругления применяется только к объёмным телам.
-Фаска задаётся расстоянием <code>r</code>, взятым от ребра до линии фаски и масивом ближайших точек <code>refs</code>. Если <code>refs == None</code>, выбранными считаются все элементы топологии. </p>
+        <p>Body chamfering operation. Unlike rounding, this applies only to solid bodies. The chamfer is specified by
+            the distance <code> r </code>, taken from the edge to the chamfer line and an array of the nearest points
+            <code> refs </code>. If <code> refs == None </code>, then all elements of the topology are considered
+            selected.</p>
 
-<p>TODO: несиметричная фаска. </p>
+        <p>TODO: Asymmetric chamfer. </p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">chamfer</span><span class="p">(</span><span class="n">proto</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">refs</span><span class="o">=</span><span class="n">referencedPoints</span><span class="p">)</span>
-</code></pre></div>
+        <div class="codehilite"><pre><span></span><code><span class="n">chamfer</span><span class="p">(</span><span
+                class="n">proto</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span
+                class="n">r</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span
+                class="n">refs</span><span class="o">=</span><span class="n">referencedPoints</span><span
+                class="p">)</span>
+</code></pre>
+        </div>
 
-<p><img src="../images/generic/chamfer0.png" alt="" />
-<img src="../images/generic/chamfer1.png" alt="" /> <br />
-<img src="../images/generic/chamfer2.png" alt="" />
-<img src="../images/generic/chamfer3.png" alt="" />  </p>
+        <p><img src="../images/generic/chamfer0.png" alt=""/>
+            <img src="../images/generic/chamfer1.png" alt=""/> <br/>
+            <img src="../images/generic/chamfer2.png" alt=""/>
+            <img src="../images/generic/chamfer3.png" alt=""/></p>
 
-<hr />
+        <hr/>
 
-<h2 id="thicksolid">Thicksolid</h2>
+        <h2 id="thicksolid">Thicksolid</h2>
 
-<p>Операция создания тонкостенного объёмного тела.
-Задаётся прототипной моделью <code>shp</code> и массивом точек, ближайших к удаляемым граням <code>refs</code>.
-Также задаётся толщина стенок <code>t</code>. Если толщина стенок положительная, стенки наращиваются наружу. Если отрицательная - внутрь.</p>
+        <p>The operation of creating a thin-walled volumetric body. Defined by the prototype model <code> shp </code>
+            and an array of points closest to the removed faces <code> refs </code>. The thickness of the walls <code>
+                t </code> is also set. If the wall thickness is positive, the walls grow outward. If negative - inward.
+        </p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">thicksolid</span><span class="p">(</span><span class="n">proto</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">thickness</span><span class="p">,</span> <span class="n">refs</span><span class="o">=</span><span class="n">referencedPoints</span><span class="p">)</span>
-</code></pre></div>
+        <div class="codehilite"><pre><span></span><code><span class="n">thicksolid</span><span class="p">(</span><span
+                class="n">proto</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span
+                class="n">t</span><span class="o">=</span><span class="n">thickness</span><span class="p">,</span> <span
+                class="n">refs</span><span class="o">=</span><span class="n">referencedPoints</span><span
+                class="p">)</span>
+</code></pre>
+        </div>
 
-<p><img src="../images/generic/thicksolid0.png" alt="" />
-<img src="../images/generic/thicksolid1.png" alt="" />  </p>
-</article>
-    </div>
-    <div id="footer"></div>
-  </body>
+        <p><img src="../images/generic/thicksolid0.png" alt=""/>
+            <img src="../images/generic/thicksolid1.png" alt=""/></p>
+    </article>
+</div>
+<div id="footer"></div>
+</body>
 </html>

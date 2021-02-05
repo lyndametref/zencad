@@ -65,29 +65,29 @@
 <li><a href="internal.html">Internal ZenCad's kitchen</a></li>
 </ul>
 </nav>
-      <article class="article">English version in preparation. COMMING SOON.<h1 id="-1">Графический интерфейс, основные моменты.</h1>
+      <article class="article">English version in preparation. COMMING SOON.<h1 id="-1">Graphical interface highlights.</h1>
 
 <p><img src="../images/gui.png" alt="gui.png" /></p>
 
-<h2 id="-2">Вызов</h2>
+<h2 id="-2">Invocation</h2>
 
-<p>Окно графического интерфейса может быть вызвано следующими способами:</p>
+<p>The GUI window can be invoked in the following ways:</p>
 
 <ul>
-<li>Вызов <code>zencad.show()</code> в интерпретаторе python.  </li>
-<li>Выполнение <code>python3 -m pip zencad</code> в среде терминала. (usage: <code>python3 -m pip zencad [filepath]</code>)  </li>
-<li>Вызов утилиты командной строки <code>zencad</code> (usage: <code>zencad [filepath]</code>)  </li>
+<li>Calling <code> zencad.show () </code> in the python interpreter. </li>
+<li>Executing <code> python3 -m pip zencad </code> in a terminal environment. (usage: <code> python3 -m pip zencad [filepath]</code>)  </li>
+<li>Calling the command line utility <code> zencad</code> (usage: <code>zencad [filepath]</code>)  </li>
 </ul>
 
-<h2 id="-3">Обновление модели по обновлению файла источника</h2>
+<h2 id="-3">Updating the model by updating the source file</h2>
 
-<p>Визуализатор отслеживает изменения файла, источника геометрии. По обновлению источника, программа автоматически начинает перевыполнение скрипта. Следует учесть, что реализация этой функциональности выполняется путём изменения работы функции <code>zencad.show()</code> (То есть, есть разница в запуске скрипта из терминала, или из программы визуализатора).  </p>
+<p>The renderer keeps track of changes in the file, the source of the geometry. When the source is updated, the program automatically starts re-executing the script. It should be noted that this functionality is implemented by changing the operation of the <code> zencad.show () </code> function (That is, there is a difference in running the script from the terminal, or from the visualizer program).</p>
 
-<h2 id="-4">Встроенный текстовый редактор</h2>
+<h2 id="-4">Built-in text editor</h2>
 
-<p>Визуализатор имеет встроенный виджет текстового редактора, который может быть использован для быстрого редактирования или проведения экспериментов. Отображение редактора <code>View/'Hide editor'</code></p>
+<p>The visualizer has a built-in text editor widget that can be used for quick editing or experimenting. Display editor <code>View/'Hide editor'</code></p>
 
-<h2 id="-5">Встроенная консоль</h2>
+<h2 id="-5">Built-in console </h2>
 
 <p>ZenCad также ретранслирует вывод терминала на встроенную консоль. Отображение консоли <code>View/'Hide console'</code>.
 Это может использоваться в случае, когда вывод основного терминала недоступен.</p>
